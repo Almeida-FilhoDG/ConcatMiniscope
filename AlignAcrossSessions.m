@@ -106,8 +106,9 @@ for i = 1:NSess
                     while (strcmp(userInput,'N'))
                         userInput = upper(input('Type X to change to manual, or Y to keep alignment: ','s' ));
                         if (strcmp(userInput,'X'))
+                            userInput = 'N';
                             while (strcmp(userInput,'N'))
-                                [tform,Corr]=ManualAlignSessions(meanFrame1,meanFrame2);
+                                [tform,Corr]=ManualAlignSessions(meanFrame1,meanFrame2,i,j);
                                 userInput = upper(input('Keep alignment? (Y/N)','s'));
                             end
                         end
