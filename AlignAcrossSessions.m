@@ -116,7 +116,7 @@ for i = 1:NSess
                 end
                 Alignment{i,j}=tform;
                 Alignment{j,i}=tform;
-                Alignment{j,i}(3,1:2)=-1*(Alignment{j,i}(3,1:2));
+                Alignment{j,i}.T(3,1:2)=-1*(Alignment{j,i}.T(3,1:2));
                 Correlation(i,j)=Corr;
                 Correlation(j,i)=Corr;
             end
