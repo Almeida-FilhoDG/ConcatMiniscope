@@ -37,7 +37,7 @@ ms.height = ms.vidObj{1}.Height;
 ms.width = ms.vidObj{1}.Width;
 
 %read timestamp information
-
+cameraMatched=0;
 for i=1:length(datFiles)
     if strcmp(datFiles(i).name,'timestamp.dat')
         fileID = fopen([dirName filesep datFiles(i).name],'r');
@@ -73,7 +73,7 @@ for i=1:length(datFiles)
         ms.Experiment = string(ms.Experiment{1});
     end
 end
-if ~cameraMatched
+if ~cameraMatched && ~isempty(datFiles)
     error('No timestamp file!'); %included by Daniel Almeida Aug/2019
 end
 %
