@@ -8,7 +8,11 @@ end
 
 Dims = size(Matrix);
 Matrix = reshape(Matrix,prod(Dims(1:2)),Dims(3));
-win = floor(concatInfo.FrameRate);
+if isfield(concatInfo,'FrameRate')
+    win = floor(concatInfo.FrameRate);
+else
+    win = 30;
+end
 HalthWin = ceil(win/2);
 Sizes = concatInfo.NumberFramesSessions;
 a=single(Matrix(:,1:Sizes(1)));
@@ -50,7 +54,9 @@ Total3d = reshape(Total,Dims(1),Dims(2),Dims(3));
 
 
 writerObj = VideoWriter([concatInfo.path separator concatInfo.ConcatFolder separator 'FinalConcatNorm1.avi'],'Grayscale AVI');
-writerObj.FrameRate = concatInfo.FrameRate;
+if isfield(concatInfo,'FrameRate')
+    writerObj.FrameRate = concatInfo.FrameRate;
+end
 open(writerObj);
 writeVideo(writerObj,Total3d);
 close(writerObj);
