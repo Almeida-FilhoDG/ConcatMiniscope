@@ -28,7 +28,10 @@ template = concatInfo.template;
 Lims = concatInfo.CutFromBorders;
 
 writerObj = VideoWriter([concatInfo.path separator concatInfo.ConcatFolder separator 'FinalConcatVideo.avi'],'Grayscale AVI');
-writerObj.FrameRate = concatInfo.FrameRate;
+if isfield(concatInfo,'FrameRate')
+    writerObj.FrameRate = concatInfo.FrameRate;
+end
+    
 open(writerObj);
 
 concatInfo.shifts = [];
