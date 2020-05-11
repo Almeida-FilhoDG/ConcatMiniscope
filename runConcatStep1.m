@@ -52,7 +52,9 @@ for i = 1:nSessions
     save([ms.dirName separator 'ms.mat'],'ms');
     clear ms
 end
-
+if ~isfield(concatInfo,'FrameRate')
+    concatInfo.FrameRate = 30;
+end
 %%% Place all the motion corrected videos in the same folder
 disp('Step 1.1: Copying videos to concatenate to the same folder and in the correct order.');
 mkdir(strcat(path,separator,ConcatFolder));

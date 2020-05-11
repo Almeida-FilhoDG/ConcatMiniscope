@@ -1,7 +1,6 @@
 function runConcatStep3to5(path)
 
 
-eval(['cd ' path])
 
 %% Pipeline for the proper concatenation of miniscope data across sessions
 % Developed by Daniel Almeida Filho Mar/2020 (SilvaLab - UCLA)
@@ -15,6 +14,7 @@ else
     separator = '/'; % For unix (mac, linux) operating systems
 end
 
+cd(strcat(path,separator,'Concatenation'))
 %% Step 3: Final motion correction of full video using a single template 
 load('concatInfo.mat')
 analysis_time ='SHtemp';
@@ -53,7 +53,11 @@ save(strcat(path,separator,ConcatFolder, separator, 'msConcat.mat'),'ms');
 
 analysis_duration = toc(script_start);
 ms.analysis_duration = analysis_duration;
-ms.time = (1:sum(concatInfo.NumberFramesSessions))*(1/concatInfo.FrameRate)*1000;
+FR = 30;
+if isfield(concatInfo,'FrameRate')
+    FR = concatInfo.FrameRate;
+end
+ms.time = (1:sum(concatInfo.NumberFramesSessions))*(1/FR)*1000;
 
 save(strcat(path,separator,ConcatFolder, separator, 'msConcat.mat'),'ms', '-v7.3');
 save (strcat(path,separator,ConcatFolder, separator, 'neuronFull.mat'), 'neuron', '-v7.3');
