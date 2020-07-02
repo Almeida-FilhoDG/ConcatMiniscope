@@ -120,9 +120,26 @@ disp(['Total duration of Step 5 = ' num2str(toc(Step5Dur)) ' seconds.'])
 
 %% Step 6: Deleting the bad neurons.
 msDeleteROI
+%% Step 7: Project the calcium raw trace, get the deconvolved trace, 
+% and the putative activity of all cells in different sessions
 
+% Get raw and deconvolved calcium traces
+getActivity(strcat(path,separator,ConcatFolder));
 
+% Get the putative activity of cells (default is output convolv1D and 
+% Foopsi Threshold methods)
+dSFactor = 3; % Downsampling factor to improve computation of neuronal activity 
+% default is 3 for a Frame Rate of 30fps. Results are outputs with the same
+% dimensions as the raw traces (downsmapling is only for computation of
+% activity and it is not applied to the final result).
+deconvConcat(strcat(path,separator,ConcatFolder),concatInfo.FrameRate,dSFactor)
 
+%% Step 8: Final check for noisy neurons
+checkNoisyCells;
+
+%% Step 9 (optional): Join all the activity in just one file
+
+joinActivity(strcat(path,separator,ConcatFolder))
 
 
 
