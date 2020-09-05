@@ -124,6 +124,17 @@ for i = 1:NSess
     end
 end
 
-
+answer = questdlg('Would you like to exclude any session due to bad alignment?', ...
+	'Session Deletion', ...
+	'Yes','No');
+% Handle response
+switch answer
+    case 'Yes'
+        list = num2cell(1:NSess);
+        [indx,tf] = listdlg('ListString',list);
+        
+    case 'No'
+        disp('No alignment issues. Proceeding to concatenation!')
+end
 
 

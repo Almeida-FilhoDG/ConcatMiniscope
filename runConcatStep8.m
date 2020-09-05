@@ -1,4 +1,4 @@
-function runConcatStep9(path)
+function runConcatStep8(path)
 
 
 
@@ -20,6 +20,6 @@ analysis_time ='SHtemp';
 path = concatInfo.path;
 ConcatFolder = concatInfo.ConcatFolder;
 
-%% Step 9 (optional): Join all the activity in just one file
+%% Step 8 (optional): Join all the activity in just one file
 
 joinActivity(strcat(path,separator,ConcatFolder))

@@ -25,7 +25,7 @@ analysis_time ='SHtemp';
 ConcatFolder = 'Concatenation';
 concatInfo.ConcatFolder = ConcatFolder;
 %%%****************%%%
-concatInfo.order = [3 2 1]; % Order in which the files in "concatInfo.Sessions" 
+concatInfo.order = [1 4 5 6 2 3]; % Order in which the files in "concatInfo.Sessions" 
 % will be concatenated. 
 nSessions = size(concatInfo.Sessions,1);
 mkdir(strcat(path,separator,ConcatFolder));
@@ -34,6 +34,7 @@ save(strcat(path,separator,ConcatFolder,separator,'concatInfo.mat'),'concatInfo'
 %% Step 1: Motion correction of single sessions (NoRMCorre)
 Step1Dur = tic; 
 disp('Step 1: Applying motion correction on single sessions.');
+plotFlag = false;
 for i = 1:nSessions
     cd(strcat(path,separator,concatInfo.Sessions(i).name))
     ms = msGenerateVideoObj(pwd,'msCam');
@@ -46,7 +47,7 @@ for i = 1:nSessions
     mkdir(strcat(pwd,separator,analysis_time));
     save([ms.dirName separator 'ms.mat'],'ms');
     disp(['Working on Session: ' num2str(i) ' of ' num2str(nSessions)])
-    ms = msNormCorre(ms,isnonrigid);
+    ms = msNormCorreConcat(ms,isnonrigid,plotFlag);
     save([ms.dirName separator 'ms.mat'],'ms');
     clear ms
 end
@@ -72,27 +73,21 @@ disp('Step 2: Aligning between sessions');
 [concatInfo.AllAlignment,concatInfo.AllCorrelation]=AlignAcrossSessions(animal);
 [concatInfo.refAverCorr,concatInfo.refSession] = nanmax(nanmean(concatInfo.AllCorrelation));
 concatInfo.FinalAlignment = concatInfo.AllAlignment(concatInfo.refSession,:);
-concatInfo.template = animal{concatInfo.refSession}.templateMotionCorr;
+concatInfo = excludeBadAlign(concatInfo);
+
 
 disp('Step 2.1: Concatenating videos for final motion correction');
 [CompleteVideo,concatInfo] = ConcatVideos(strcat(path,separator,concatInfo.ConcatFolder),concatInfo);
 save(strcat(path,separator,ConcatFolder,separator,'concatInfo.mat'),'concatInfo','-v7.3')
 disp(['Total duration of Step 2 = ' num2str(toc(Step2Dur)) ' seconds.'])
-%% Step 3: Final motion correction of full video using a single template 
+
+%% Step 3: Normalizing the concatenated video for cell detection.
 Step3Dur = tic; 
-plotFlag = true;
-[concatInfo,Mr] = msNormCorreConcat(CompleteVideo,concatInfo,plotFlag);
-save(strcat(path,separator,ConcatFolder,separator,'concatInfo.mat'),'concatInfo','-v7.3')
+[~] = NormConcatVideo(CompleteVideo,concatInfo);
 disp(['Total duration of Step 3 = ' num2str(toc(Step3Dur)) ' seconds.'])
 
-
-%% Step 4: Normalizing the concatenated video for cell detection.
+%% Step 4: Perform cell detection (CNMF-E).
 Step4Dur = tic; 
-[~] = NormConcatVideo(Mr,concatInfo);
-disp(['Total duration of Step 4 = ' num2str(toc(Step4Dur)) ' seconds.'])
-
-%% Step 5: Perform cell detection (CNMF-E).
-Step5Dur = tic; 
 spatial_downsampling = 1;
 analyse_behavior = true;
 script_start = tic;
@@ -116,11 +111,11 @@ save (strcat(path,separator,ConcatFolder, separator, 'neuronFull.mat'), 'neuron'
 
 disp('all msRun2018 finally done!!!');
 datetime
-disp(['Total duration of Step 5 = ' num2str(toc(Step5Dur)) ' seconds.'])
+disp(['Total duration of Step 4 = ' num2str(toc(Step4Dur)) ' seconds.'])
 
-%% Step 6: Deleting the bad neurons.
+%% Step 5: Deleting the bad neurons.
 msDeleteROI
-%% Step 7: Project the calcium raw trace, get the deconvolved trace, 
+%% Step 6: Project the calcium raw trace, get the deconvolved trace, 
 % and the putative activity of all cells in different sessions
 
 % Get raw and deconvolved calcium traces
@@ -134,10 +129,10 @@ dSFactor = 3; % Downsampling factor to improve computation of neuronal activity
 % activity and it is not applied to the final result).
 deconvConcat(strcat(path,separator,ConcatFolder),concatInfo.FrameRate,dSFactor)
 
-%% Step 8: Final check for noisy neurons
+%% Step 7: Final check for noisy neurons
 checkNoisyCells;
 
-%% Step 9 (optional): Join all the activity in just one file
+%% Step 8 (optional): Join all the activity in just one file
 
 joinActivity(strcat(path,separator,ConcatFolder))
 

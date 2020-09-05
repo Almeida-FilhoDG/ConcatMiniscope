@@ -36,6 +36,7 @@ save(strcat(path,separator,ConcatFolder,separator,'concatInfo.mat'),'concatInfo'
 %% Step 1: Motion correction of single sessions (NoRMCorre)
 Step1Dur = tic; 
 disp('Step 1: Applying motion correction on single sessions.');
+plotFlag = false;
 for i = 1:nSessions
     cd(strcat(path,separator,concatInfo.Sessions(i).name))
     ms = msGenerateVideoObj(pwd,'msCam');
@@ -48,7 +49,7 @@ for i = 1:nSessions
     mkdir(strcat(pwd,separator,analysis_time));
     save([ms.dirName separator 'ms.mat'],'ms');
     disp(['Working on Session: ' num2str(i) ' of ' num2str(nSessions)])
-    ms = msNormCorre(ms,isnonrigid);
+    ms = msNormCorreConcat(ms,isnonrigid,plotFlag);
     save([ms.dirName separator 'ms.mat'],'ms');
     clear ms
 end

@@ -19,7 +19,8 @@ disp('Step 2: Aligning between sessions');
 [concatInfo.AllAlignment,concatInfo.AllCorrelation]=AlignAcrossSessions(animal);
 [concatInfo.refAverCorr,concatInfo.refSession] = nanmax(nanmean(concatInfo.AllCorrelation));
 concatInfo.FinalAlignment = concatInfo.AllAlignment(concatInfo.refSession,:);
-concatInfo.template = animal{concatInfo.refSession}.templateMotionCorr;
+
+concatInfo = excludeBadAlign(concatInfo);
 
 disp('Step 2.1: Concatenating videos for final motion correction');
 [~,concatInfo] = ConcatVideos(path,concatInfo);

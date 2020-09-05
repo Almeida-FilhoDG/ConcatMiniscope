@@ -37,7 +37,7 @@ for pos = 1:length(positions)
     actPos = positions(pos);
     if ~isempty(Alignment{actPos})
         videoObj = VideoReader([path '\' videos(pos).name]);
-        NFrames = videoObj.NumberOfFrames;
+        NFrames = videoObj.NumFrames;
         Width = videoObj.Width;
         Height = videoObj.Height;
         LimsW = 1 + Lims(3):Width + Lims(1);

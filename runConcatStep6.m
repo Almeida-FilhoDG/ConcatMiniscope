@@ -1,4 +1,4 @@
-function runConcatStep7(path)
+function runConcatStep6(path)
 
 
 
@@ -20,7 +20,7 @@ analysis_time ='SHtemp';
 path = concatInfo.path;
 ConcatFolder = concatInfo.ConcatFolder;
 
-%% Step 7: Project the calcium raw trace, get the deconvolved trace, 
+%% Step 6: Project the calcium raw trace, get the deconvolved trace, 
 % and the putative activity of all cells in different sessions
 
 % Get raw and deconvolved calcium traces
