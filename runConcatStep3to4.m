@@ -22,10 +22,10 @@ path = concatInfo.path;
 ConcatFolder = concatInfo.ConcatFolder;
 cd(strcat(concatInfo.path,separator,concatInfo.ConcatFolder))
 name = strcat(concatInfo.path,separator,concatInfo.ConcatFolder,separator,'ConcatenatedVideo.avi');
-CompleteVideo = read_file(name);
 Step3Dur = tic;  
+CompleteVideo = read_file(name);
 [~] = NormConcatVideo(CompleteVideo,concatInfo);
-disp(['Total duration of Step 3 = ' num2str(toc(Step4Dur)) ' seconds.'])
+disp(['Total duration of Step 3 = ' num2str(toc(Step3Dur)) ' seconds.'])
 
 %% Step 4: Perform cell detection (CNMF-E).
 Step4Dur = tic; 

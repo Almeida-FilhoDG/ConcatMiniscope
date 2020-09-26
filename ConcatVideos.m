@@ -27,9 +27,9 @@ if ~isempty(actual)
     Lims=round([min(actual) max(actual)]);
 end
 
-if nargin<2
-    ref = 3;
-end
+% if nargin<2
+%     ref = 3;
+% end
 
 NumberOfFrames = nan(size(positions));
 emptyFlag = [];
@@ -62,10 +62,13 @@ for pos = 1:length(positions)
 end
 
 if ~isempty(emptyFlag)
-    ConcatVideo{emptyFlag} = ConcatVideo{ref};
-    NumberOfFrames(emptyFlag)=size(ConcatVideo{ref},3);
+    for ii=1:length(emptyFlag)
+        ConcatVideo{emptyFlag(ii)} = ConcatVideo{ref};
+        NumberOfFrames(emptyFlag(ii))=size(ConcatVideo{ref},3);
+    end
 end
 
+concatInfo.AbsentSessionsReplacedByRef = emptyFlag;
 CompleteVideo = [];
 for i = 1:length(positions)
     CompleteVideo = cat(3,CompleteVideo,ConcatVideo{i});

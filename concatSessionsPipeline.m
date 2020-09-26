@@ -56,7 +56,7 @@ end
 disp('Step 1.1: Copying videos to concatenate to the same folder and in the correct order.');
 mkdir(strcat(path,separator,ConcatFolder));
 animal={};
-for i = 1:nSessions
+for i = 1:length(concatInfo.order)
     actualIdx = concatInfo.order(i);
     cd(strcat(path,separator,concatInfo.Sessions(actualIdx).name,separator))
     load('ms.mat')

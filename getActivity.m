@@ -30,7 +30,7 @@ if exist(strcat(path,separator,'validROIs.mat'))
     load(strcat(path,separator,'validROIs.mat'));
 end
 %% Create Video
-Video = read_file(strcat(path,separator,'FinalConcatVideo.avi'));
+Video = read_file(strcat(path,separator,'ConcatenatedVideo.avi'));
 %%
 for vid = 1:NSessions
     newObj=VideoWriter(strcat(path,separator,['msvideo' num2str(vid) '.avi']),'Grayscale AVI');
