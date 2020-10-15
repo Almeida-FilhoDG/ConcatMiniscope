@@ -20,8 +20,8 @@ load('concatInfo.mat')
 analysis_time ='SHtemp';
 path = concatInfo.path;
 ConcatFolder = concatInfo.ConcatFolder;
-cd(strcat(concatInfo.path,separator,concatInfo.ConcatFolder))
-name = strcat(concatInfo.path,separator,concatInfo.ConcatFolder,separator,'ConcatenatedVideo.avi');
+cd(strcat(path,separator,concatInfo.ConcatFolder))
+name = strcat(path,separator,concatInfo.ConcatFolder,separator,'ConcatenatedVideo.avi');
 Step3Dur = tic;  
 CompleteVideo = read_file(name);
 [~] = NormConcatVideo(CompleteVideo,concatInfo);

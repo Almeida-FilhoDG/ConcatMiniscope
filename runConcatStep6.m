@@ -16,8 +16,6 @@ end
 
 cd(strcat(path,separator,'Concatenation'))
 load('concatInfo.mat')
-analysis_time ='SHtemp';
-path = concatInfo.path;
 ConcatFolder = concatInfo.ConcatFolder;
 
 %% Step 6: Project the calcium raw trace, get the deconvolved trace, 

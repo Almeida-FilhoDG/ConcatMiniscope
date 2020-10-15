@@ -29,6 +29,7 @@ ind_nonzero = (psf(:)>=max(psf(:,1)));
 psf = psf-mean(psf(ind_nonzero));
 psf(~ind_nonzero) = 0;
 bound = 4*gSiz;
+gridSize = [128 128];
 
 template = [];
 
@@ -45,7 +46,9 @@ for video_i = 1:ms.numFiles
     tic
     name = [ms.vidObj{1, video_i}.Path separator ms.vidObj{1, video_i}.Name];
     disp(['Registration on: ' name]);
-    
+    if ms.vidObj{1, video_i}.Height > 480
+        gridSize = [164 164];
+    end
     % read data and convert to single
     Yf = read_file(name);
     Yf = single(Yf);
@@ -58,7 +61,7 @@ for video_i = 1:ms.numFiles
     if isnonrigid
         disp('Non-rigid motion correction...');
         options = NoRMCorreSetParms('d1',d1-bound,'d2',d2-bound,'bin_width',50, ...
-            'grid_size',[128,128]*2,'mot_uf',4,'correct_bidir',false, ...
+            'grid_size',gridSize*2,'mot_uf',4,'correct_bidir',false, ...
             'overlap_pre',32,'overlap_post',32,'max_shift',20);
     else
         disp('Rigid motion correction...');

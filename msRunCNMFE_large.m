@@ -28,7 +28,11 @@ pars_envs = struct('memory_size_to_use', 50, ...   % GB, memory space you allow 
 include_residual = false; % If true, look for neurons in the residuals
 gSig = 3;           % pixel, gaussian width of a gaussian kernel for filtering the data. 0 means no filtering
 gSiz = 15;          % pixel, neuron diameter
-ssub = 2;          % spatial downsampling factor
+% ssub = 2;          % spatial downsampling factor
+% gSig = 1;           % pixel, gaussian width of a gaussian kernel for filtering the data. 0 means no filtering
+% gSiz = 7;          % pixel, neuron diameter
+ssub = ms.ds;          % spatial downsampling factor
+
 with_dendrites = false;   % with dendrites or not
 if with_dendrites
     % determine the search locations by dilating the current neuron shapes
@@ -71,6 +75,7 @@ show_merge = false;  % if true, manually verify the merging step
 merge_thr = 0.65;     % thresholds for merging neurons; [spatial overlap ratio, temporal correlation of calcium traces, spike correlation]
 method_dist = 'max';   % method for computing neuron distances {'mean', 'max'}
 dmin = 5;       % minimum distances between two neurons. it is used together with merge_thr
+% dmin = 3;       % minimum distances between two neurons. it is used together with merge_thr
 dmin_only = 2;  % merge neurons if their distances are smaller than dmin_only.
 merge_thr_spatial = [0.8, 0.4, -inf];  % merge components with highly correlated spatial shapes (corr=0.8) and small temporal correlations (corr=0.1)
 
