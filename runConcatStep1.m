@@ -1,4 +1,4 @@
-function runConcatStep1(path)
+function runConcatStep1(path,equipment)
 
 
 eval(['cd ' path])
@@ -19,6 +19,7 @@ end
 concatInfo.spatial_downsampling = 2; % (Recommended range: 2 - 4. Downsampling significantly increases computational speed, but verify it does not
 path = pwd;
 concatInfo.path = path;
+concatInfo.equipment = equipment;
 isnonrigid = true; % If true, performs non-rigid registration (slower). If false, rigid alignment (faster).
 % non-rigid is preferred within sessions.
 concatInfo.Sessions = dir(path);
@@ -37,10 +38,12 @@ save(strcat(path,separator,ConcatFolder,separator,'concatInfo.mat'),'concatInfo'
 Step1Dur = tic; 
 disp('Step 1: Applying motion correction on single sessions.');
 plotFlag = false;
+replaceRGBVideo = true;
 for i = 1:nSessions
     cd(strcat(path,separator,concatInfo.Sessions(i).name))
-    ms = msGenerateVideoObj(pwd,'msCam');
+    ms = msGenerateVideoObjConcat(pwd, concatInfo.equipment, replaceRGBVideo);
     ms.FrameRate = round(1/(nanmedian(diff(ms.time))/1000)); 
+    ms.equipment = concatInfo.equipment;
     if i==1
        concatInfo.FrameRate = ms.FrameRate; 
     end

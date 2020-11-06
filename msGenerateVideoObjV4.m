@@ -1,8 +1,11 @@
 
-function ms = msGenerateVideoObjV4(dirName)
+function ms = msGenerateVideoObjV4(dirName,replaceVideo)
 %MSGENERATEMS Summary of this function goes here
 %   Detailed explanation goes here
 
+if nargin<2
+    replaceVideo=false;
+end
 ms.dirName = dirName; % Added by GE to keep track of where the files were initially
 
 MAXFRAMESPERFILE = 1000; %This is set in the miniscope control software
@@ -27,7 +30,7 @@ ms.numFiles = ms.numFiles +1;
 for i=1:ms.numFiles
     ms.vidObj{i} = VideoReader([dirName filesep num2str(i-1) '.avi']);
     if strcmp(ms.vidObj{i}.VideoFormat,'RGB24')
-        convertToGray(ms.vidObj{i})
+        convertToGray(ms.vidObj{i},replaceVideo)
         ms.vidObj{i} = VideoReader([dirName filesep 'gray' num2str(i-1) '.avi']);
     end
     ms.vidNum = [ms.vidNum (i-1)*ones(1,ms.vidObj{i}.NumberOfFrames)];
@@ -55,12 +58,7 @@ for i=1:length(datFiles)
         %         ms.Experiment = string(ms.Experiment{1});
     end
 end
-% if ~cameraMatched && ~isempty(datFiles)
-%     error('No timestamp file!'); %included by Daniel Almeida Aug/2019
-% end
-%
-%     %figure out date and time of recording if that information if available
-%     %in folder path
+
 idx = strfind(dirName, '_');
 idx2 = strfind(dirName, filesep);
 if (length(idx) >= 4)
@@ -72,8 +70,12 @@ if (length(idx) >= 4)
         str2double(dirName((idx2(end)-2):(idx2(end)-1))));%second
 end
 
-    function convertToGray(videoObj)
-        writerObj = VideoWriter([videoObj.Path filesep 'gray' videoObj.Name],'Grayscale AVI');
+    function convertToGray(videoObj,replace)
+        if replace
+            writerObj = VideoWriter([videoObj.Path filesep videoObj.Name],'Grayscale AVI');
+        else
+            writerObj = VideoWriter([videoObj.Path filesep 'gray' videoObj.Name],'Grayscale AVI');
+        end
         BuffVideo = nan(videoObj.Width,videoObj.Height,videoObj.NumberOfFrames);
         ii = 1;
         while hasFrame(videoObj)

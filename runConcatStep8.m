@@ -14,12 +14,7 @@ else
     separator = '/'; % For unix (mac, linux) operating systems
 end
 
-cd(strcat(path,separator,'Concatenation'))
-load('concatInfo.mat')
-analysis_time ='SHtemp';
-path = concatInfo.path;
-ConcatFolder = concatInfo.ConcatFolder;
 
 %% Step 8 (optional): Join all the activity in just one file
 
-joinActivity(strcat(path,separator,ConcatFolder))
+joinActivity(strcat(path,separator,'Concatenation'))

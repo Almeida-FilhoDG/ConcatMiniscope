@@ -15,17 +15,17 @@ end
 concatInfo.spatial_downsampling = 2; % (Recommended range: 2 - 4. Downsampling significantly increases computational speed, but verify it does not
 path = pwd;
 concatInfo.path = path;
+concatInfo.equipment = 'V4';
 %%%****************%%%
 isnonrigid = true; % If true, performs non-rigid registration (slower). If false, rigid alignment (faster).
 % non-rigid is preferred within sessions.
 concatInfo.Sessions = dir(path);
 concatInfo.Sessions = concatInfo.Sessions(3:end,:);
-script_start = tic;
 analysis_time ='SHtemp';
 ConcatFolder = 'Concatenation';
 concatInfo.ConcatFolder = ConcatFolder;
 %%%****************%%%
-concatInfo.order = [1 4 5 6 2 3]; % Order in which the files in "concatInfo.Sessions" 
+concatInfo.order = [1 2 3]; % Order in which the files in "concatInfo.Sessions" 
 % will be concatenated. 
 nSessions = size(concatInfo.Sessions,1);
 mkdir(strcat(path,separator,ConcatFolder));
@@ -35,10 +35,12 @@ save(strcat(path,separator,ConcatFolder,separator,'concatInfo.mat'),'concatInfo'
 Step1Dur = tic; 
 disp('Step 1: Applying motion correction on single sessions.');
 plotFlag = false;
+replaceRGBVideo = false;
 for i = 1:nSessions
     cd(strcat(path,separator,concatInfo.Sessions(i).name))
-    ms = msGenerateVideoObj(pwd,'msCam');
+    ms = msGenerateVideoObjConcat(pwd, concatInfo.equipment, replaceRGBVideo);
     ms.FrameRate = round(1/(nanmedian(diff(ms.time))/1000)); 
+    ms.equipment = concatInfo.equipment;
     if i==1
        concatInfo.FrameRate = ms.FrameRate; 
     end
@@ -66,6 +68,7 @@ for i = 1:length(concatInfo.order)
     cd(analysis_time)
     copyfile('msvideo.avi',...
         strcat(path,separator,ConcatFolder,separator,['msvideo' num2str(i) '.avi']))
+    clear ms
 end
 save(strcat(path,separator,ConcatFolder,separator,'animal.mat'),'animal','-v7.3')
 disp(['Total duration of Step 1 = ' num2str(toc(Step1Dur)) ' seconds.'])
@@ -90,19 +93,23 @@ disp(['Total duration of Step 3 = ' num2str(toc(Step3Dur)) ' seconds.'])
 
 %% Step 4: Perform cell detection (CNMF-E).
 Step4Dur = tic; 
-spatial_downsampling = 1;
-analyse_behavior = true;
+if ismember(concatInfo.equipment,{'v4','V4'})
+    spatial_downsampling = 1;
+else
+    spatial_downsampling = 2;
+end
 script_start = tic;
 mkdir(strcat(path,separator,ConcatFolder,separator,analysis_time));
 copyfile(strcat(path,separator,ConcatFolder,separator,'FinalConcatNorm1.avi'),...
         strcat(path,separator,ConcatFolder,separator,analysis_time,separator,'msvideo.avi'))
 
-ms = msGenerateVideoObj(strcat(path,separator,ConcatFolder),'FinalConcatNorm');
+ms = msGenerateVideoObjConcat(strcat(path,separator,ConcatFolder,separator,analysis_time), concatInfo.equipment, replaceRGBVideo);
 ms.analysis_time = analysis_time;
+concatInfo.downSamplingCNMF_E = spatial_downsampling;
 ms.ds = spatial_downsampling;
 save(strcat(path,separator,ConcatFolder, separator, 'msConcat.mat'),'ms');
 
-[ms, neuron] = msRunCNMFE_large(ms);
+[ms, neuron] = msRunCNMFE_Concat(ms);
 
 analysis_duration = toc(script_start);
 ms.analysis_duration = analysis_duration;

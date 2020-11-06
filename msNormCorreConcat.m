@@ -46,7 +46,7 @@ for video_i = 1:ms.numFiles
     tic
     name = [ms.vidObj{1, video_i}.Path separator ms.vidObj{1, video_i}.Name];
     disp(['Registration on: ' name]);
-    if ms.vidObj{1, video_i}.Height > 480
+    if ismember(ms.equipment,{'v4','V4'})
         gridSize = [164 164];
     end
     % read data and convert to single

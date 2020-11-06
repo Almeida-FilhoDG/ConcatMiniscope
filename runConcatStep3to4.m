@@ -18,30 +18,35 @@ cd(strcat(path,separator,'Concatenation'))
 %% Step 3: Normalizing the concatenated video for cell detection.
 load('concatInfo.mat')
 analysis_time ='SHtemp';
-path = concatInfo.path;
+% path = concatInfo.path;
 ConcatFolder = concatInfo.ConcatFolder;
 cd(strcat(path,separator,concatInfo.ConcatFolder))
 name = strcat(path,separator,concatInfo.ConcatFolder,separator,'ConcatenatedVideo.avi');
 Step3Dur = tic;  
+disp('Loading video...')
 CompleteVideo = read_file(name);
 [~] = NormConcatVideo(CompleteVideo,concatInfo);
 disp(['Total duration of Step 3 = ' num2str(toc(Step3Dur)) ' seconds.'])
 
 %% Step 4: Perform cell detection (CNMF-E).
 Step4Dur = tic; 
-spatial_downsampling = 1;
-analyse_behavior = true;
+if ismember(concatInfo.equipment,{'v4','V4'})
+    spatial_downsampling = 1;
+else
+    spatial_downsampling = 2;
+end
 script_start = tic;
 mkdir(strcat(path,separator,ConcatFolder,separator,analysis_time));
 copyfile(strcat(path,separator,ConcatFolder,separator,'FinalConcatNorm1.avi'),...
         strcat(path,separator,ConcatFolder,separator,analysis_time,separator,'msvideo.avi'))
 
-ms = msGenerateVideoObj(strcat(path,separator,ConcatFolder),'FinalConcatNorm');
+ms = msGenerateVideoObjConcat(strcat(path,separator,ConcatFolder,separator,analysis_time), concatInfo.equipment, replaceRGBVideo);
 ms.analysis_time = analysis_time;
+concatInfo.downSamplingCNMF_E = spatial_downsampling;
 ms.ds = spatial_downsampling;
 save(strcat(path,separator,ConcatFolder, separator, 'msConcat.mat'),'ms');
 
-[ms, neuron] = msRunCNMFE_large(ms);
+[ms, neuron] = msRunCNMFE_Concat(ms);
 
 analysis_duration = toc(script_start);
 ms.analysis_duration = analysis_duration;

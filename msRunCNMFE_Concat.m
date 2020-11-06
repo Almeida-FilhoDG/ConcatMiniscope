@@ -5,7 +5,7 @@
 % the CNMFE_large (patches analysis) with established parameters.
 % Based on original script by Pengcheng Zhou, edited by Guillaume Etter
 
-function [ms, neuron] = msRunCNMFE_large(ms)
+function [ms, neuron] = msRunCNMFE_Concat(ms)
 
 %% Auto-detect operating system
 if ispc
@@ -256,5 +256,6 @@ ms.FiltTraces = neuron.C';
 ms.RawTraces = neuron.C_raw';
 ms.SFPs = neuron.reshape(neuron.A, 2);
 ms.numNeurons = size(ms.SFPs,3);
+ms.pars_envs=pars_envs;
 
 end
