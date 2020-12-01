@@ -12,7 +12,7 @@ Requirements:
 1. Organize your data with a parent folder for each animal:
     1. Within each parent folder, place all the information from each session to be concatenated within a child folder.
 1. Follow the steps in the `concatSessionsPipeline.m` file.
-   1. In the Parameters section, choose the parameters marked with `%%%****************%%%`** . **Attention to the `concatInfo.order` parameter in which you need to inform the order sessions should be concatenated based on their order in the `concatInfo.Sessions` variable.**
+   1. In the Parameters section, choose the parameters marked with `%%%****************%%%`. **Attention to the `concatInfo.order` parameter in which you need to inform the order sessions should be concatenated based on their order in the `concatInfo.Sessions` variable.**
    1. After running CNMF-e on the concatenated video (*Step 4*), you may delete ROIs that do not correspond to real neurons using the msDeleteROI (optional) based on ROIs' spatial and temporal shapes.
    1. On *Step 6* select the downsampling factor (`dSFactor`) you want to use on the calcium traces for spike inference.
    1. *Step 7* is a Matlab app (`checkNoisyCells`) used for deleting neurons that are too noisy and show poor spike inference from calcium traces.
