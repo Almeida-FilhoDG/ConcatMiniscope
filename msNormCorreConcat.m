@@ -13,12 +13,6 @@ warning off all
 if nargin<3
     plotFlag = false;
 end
-%% Auto-detect operating system
-if ispc
-    separator = '\'; % For pc operating systems
-else
-    separator = '/'; % For unix (mac, linux) operating systems
-end
 
 %% Filtering parameters
 ds = ms.ds;
@@ -33,7 +27,7 @@ gridSize = [128 128];
 
 template = [];
 
-writerObj = VideoWriter([ms.dirName separator ms.analysis_time separator 'msvideo.avi'],'Grayscale AVI');
+writerObj = VideoWriter([ms.dirName filesep ms.analysis_time filesep 'msvideo.avi'],'Grayscale AVI');
 if isfield(ms,'FrameRate')
     writerObj.FrameRate = ms.FrameRate;
 end
@@ -44,7 +38,7 @@ ms.meanFrame = [];
 
 for video_i = 1:ms.numFiles
     tic
-    name = [ms.vidObj{1, video_i}.Path separator ms.vidObj{1, video_i}.Name];
+    name = [ms.vidObj{1, video_i}.Path filesep ms.vidObj{1, video_i}.Name];
     disp(['Registration on: ' name]);
     if ismember(ms.equipment,{'v4','V4'})
         gridSize = [164 164];

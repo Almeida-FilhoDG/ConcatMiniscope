@@ -16,17 +16,11 @@ function joinActivity(path,order,flag)
 %  
 % Developed by Daniel Almeida Filho (Jun, 2020) almeidafilhodg@ucla.edu
 
-if ispc
-    separator = '\'; % For pc operating  syste  ms
-else
-    separator = '/'; % For unix (mac, linux) operating systems
-end
 
 
-
-files = dir([path separator 'neuronVid*']);
+files = dir([path filesep 'neuronVid*']);
 nFiles = length(files);
-load(strcat(path,separator,'NoisyCells.mat'),'NoisyCells')
+load(strcat(path,filesep,'NoisyCells.mat'),'NoisyCells')
 if nargin < 3
     flag = 0;
     if nargin<2
@@ -35,7 +29,7 @@ if nargin < 3
 end
 
 for i = 1:nFiles
-    load([path separator files(i).name],'neuron');
+    load([path filesep files(i).name],'neuron');
     nNeurs = size(neuron.C,1);
     idxValids = true(1,nNeurs);
     idxValids(NoisyCells) = false;
@@ -47,4 +41,4 @@ for i = 1:nFiles
     end
 end
 
-save(strcat(path,separator,'concatResult.mat'),'concatResult')
+save(strcat(path,filesep,'concatResult.mat'),'concatResult')

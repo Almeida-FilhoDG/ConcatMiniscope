@@ -23,10 +23,8 @@ for i = 1:size(Data,1)
     temp = Data(i,:)';
     temp = conv(temp,rectwin(DownSampleFactor)/DownSampleFactor,'same');
     temp = temp(1:DownSampleFactor:end);
-    StartIdx=tic;
     [~,temp2, ~] = deconvolveCa(temp, 'ar1', ...
         'thresholded', 'optimize_smin', 'optimize_pars', 'thresh_factor', 0.99);  %#ok<*ASGLU>
-    EndIdx = 
     temp2=interp1(timevecDiff(1:length(temp2)),temp2,0:size(Data,2)-1);
     temp2(isnan(temp2))=0;
     FR(i,:)=temp2;%./nanmax(temp2);

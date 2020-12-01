@@ -8,12 +8,6 @@ eval(['cd ' path])
 % If you have any questions, please send an email to
 % almeidafilhodg@ucla.edu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Auto-detect operating system
-if ispc
-    separator = '\'; % For pc operating  syste  ms
-else
-    separator = '/'; % For unix (mac, linux) operating systems
-end
 
 %% Parameters
 concatInfo.spatial_downsampling = 2; % (Recommended range: 2 - 4. Downsampling significantly increases computational speed, but verify it does not
@@ -28,11 +22,11 @@ script_start = tic;
 analysis_time ='SHtemp';
 ConcatFolder = 'Concatenation';
 concatInfo.ConcatFolder = ConcatFolder;
-concatInfo.order = [3 2 1]; % Order in which the files in "concatInfo.Sessions" 
+concatInfo.order = [1 2 3]; % Order in which the files in "concatInfo.Sessions" 
 % will be concatenated. 
 nSessions = size(concatInfo.Sessions,1);
-mkdir(strcat(path,separator,ConcatFolder));
-save(strcat(path,separator,ConcatFolder,separator,'concatInfo.mat'),'concatInfo','-v7.3')
+mkdir(strcat(path,filesep,ConcatFolder));
+save(strcat(path,filesep,ConcatFolder,filesep,'concatInfo.mat'),'concatInfo','-v7.3')
 
 %% Step 1: Motion correction of single sessions (NoRMCorre)
 Step1Dur = tic; 
@@ -40,8 +34,8 @@ disp('Step 1: Applying motion correction on single sessions.');
 plotFlag = false;
 replaceRGBVideo = true;
 for i = 1:nSessions
-    cd(strcat(path,separator,concatInfo.Sessions(i).name))
-    ms = msGenerateVideoObjConcat(pwd, concatInfo.equipment, replaceRGBVideo);
+    cd(strcat(path,filesep,concatInfo.Sessions(i).name))
+    ms = msGenerateVideoObjConcat(pwd, concatInfo.equipment, replaceRGBVideo, 'msCam');
     ms.FrameRate = round(1/(nanmedian(diff(ms.time))/1000)); 
     ms.equipment = concatInfo.equipment;
     if i==1
@@ -49,11 +43,11 @@ for i = 1:nSessions
     end
     ms.analysis_time = analysis_time;
     ms.ds = concatInfo.spatial_downsampling;
-    mkdir(strcat(pwd,separator,analysis_time));
-    save([ms.dirName separator 'ms.mat'],'ms');
+    mkdir(strcat(pwd,filesep,analysis_time));
+    save([ms.dirName filesep 'ms.mat'],'ms');
     disp(['Working on Session: ' num2str(i) ' of ' num2str(nSessions)])
     ms = msNormCorreConcat(ms,isnonrigid,plotFlag);
-    save([ms.dirName separator 'ms.mat'],'ms');
+    save([ms.dirName filesep 'ms.mat'],'ms');
     clear ms
 end
 if ~isfield(concatInfo,'FrameRate')
@@ -61,17 +55,18 @@ if ~isfield(concatInfo,'FrameRate')
 end
 %%% Place all the motion corrected videos in the same folder
 disp('Step 1.1: Copying videos to concatenate to the same folder and in the correct order.');
-mkdir(strcat(path,separator,ConcatFolder));
+mkdir(strcat(path,filesep,ConcatFolder));
 animal={};
 for i = 1:nSessions
     actualIdx = concatInfo.order(i);
-    cd(strcat(path,separator,concatInfo.Sessions(actualIdx).name,separator))
+    cd(strcat(path,filesep,concatInfo.Sessions(actualIdx).name,filesep))
     load('ms.mat')
     animal{i}=ms;
     cd(analysis_time)
     copyfile('msvideo.avi',...
-        strcat(path,separator,ConcatFolder,separator,['msvideo' num2str(i) '.avi']))
+        strcat(path,filesep,ConcatFolder,filesep,['msvideo' num2str(i) '.avi']))
+    clear ms
 end
-save(strcat(path,separator,ConcatFolder,separator,'animal.mat'),'animal','-v7.3')
+save(strcat(path,filesep,ConcatFolder,filesep,'animal.mat'),'animal','-v7.3')
 disp(['Total duration of Step 1 = ' num2str(toc(Step1Dur)) ' seconds.'])
 end

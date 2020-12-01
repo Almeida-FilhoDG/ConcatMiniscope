@@ -3,20 +3,15 @@
 % version allows you to perform unsupervised analysis. It is recommended to
 % first run a few manual analyses to establish your parameters, then use
 % the CNMFE_large (patches analysis) with established parameters.
-% Based on original script by Pengcheng Zhou, edited by Guillaume Etter
+% Based on original script by Pengcheng Zhou, edited by Guillaume Etter,
+% edited by Daniel Almeida Filho (2020, SilvaLab-UCLA)for running on concatenated data.
+% If you have any questions, please send an email to
+% almeidafilhodg@ucla.edu
 
 function [ms, neuron] = msRunCNMFE_Concat(ms)
-
-%% Auto-detect operating system
-if ispc
-    separator = '\'; % For pc operating systems
-else
-    separator = '/'; % For unix (mac, linux) operating systems
-end
-
 %% choose data
 neuron = Sources2D();
-nam = get_fullname([ms.dirName separator ms.analysis_time separator 'msvideo.avi']);
+nam = get_fullname([ms.dirName filesep ms.analysis_time filesep 'msvideo.avi']);
 nam = neuron.select_data(nam);  %if nam is [], then select data interactively
 
 %% parameters

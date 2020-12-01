@@ -3,19 +3,14 @@
 % If you have any questions, please send an email to
 % almeidafilhodg@ucla.edu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Auto-detect operating system
-if ispc
-    separator = '\'; % For pc operating  syste  ms
-else
-    separator = '/'; % For unix (mac, linux) operating systems
-end
 
 %% Parameters
 %%%****************%%%
 concatInfo.spatial_downsampling = 2; % (Recommended range: 2 - 4. Downsampling significantly increases computational speed, but verify it does not
 path = pwd;
 concatInfo.path = path;
-concatInfo.equipment = 'V4';
+%%%****************%%%
+concatInfo.equipment = 'V4'; %equipment used for imaging.
 %%%****************%%%
 isnonrigid = true; % If true, performs non-rigid registration (slower). If false, rigid alignment (faster).
 % non-rigid is preferred within sessions.
@@ -28,8 +23,8 @@ concatInfo.ConcatFolder = ConcatFolder;
 concatInfo.order = [1 2 3]; % Order in which the files in "concatInfo.Sessions" 
 % will be concatenated. 
 nSessions = size(concatInfo.Sessions,1);
-mkdir(strcat(path,separator,ConcatFolder));
-save(strcat(path,separator,ConcatFolder,separator,'concatInfo.mat'),'concatInfo','-v7.3')
+mkdir(strcat(path,filesep,ConcatFolder));
+save(strcat(path,filesep,ConcatFolder,filesep,'concatInfo.mat'),'concatInfo','-v7.3')
 
 %% Step 1: Motion correction of single sessions (NoRMCorre)
 Step1Dur = tic; 
@@ -37,8 +32,8 @@ disp('Step 1: Applying motion correction on single sessions.');
 plotFlag = false;
 replaceRGBVideo = false;
 for i = 1:nSessions
-    cd(strcat(path,separator,concatInfo.Sessions(i).name))
-    ms = msGenerateVideoObjConcat(pwd, concatInfo.equipment, replaceRGBVideo);
+    cd(strcat(path,filesep,concatInfo.Sessions(i).name))
+    ms = msGenerateVideoObjConcat(pwd, concatInfo.equipment, replaceRGBVideo,'msCam');
     ms.FrameRate = round(1/(nanmedian(diff(ms.time))/1000)); 
     ms.equipment = concatInfo.equipment;
     if i==1
@@ -46,11 +41,11 @@ for i = 1:nSessions
     end
     ms.analysis_time = analysis_time;
     ms.ds = concatInfo.spatial_downsampling;
-    mkdir(strcat(pwd,separator,analysis_time));
-    save([ms.dirName separator 'ms.mat'],'ms');
+    mkdir(strcat(pwd,filesep,analysis_time));
+    save([ms.dirName filesep 'ms.mat'],'ms');
     disp(['Working on Session: ' num2str(i) ' of ' num2str(nSessions)])
     ms = msNormCorreConcat(ms,isnonrigid,plotFlag);
-    save([ms.dirName separator 'ms.mat'],'ms');
+    save([ms.dirName filesep 'ms.mat'],'ms');
     clear ms
 end
 if ~isfield(concatInfo,'FrameRate')
@@ -58,19 +53,19 @@ if ~isfield(concatInfo,'FrameRate')
 end
 %%% Place all the motion corrected videos in the same folder
 disp('Step 1.1: Copying videos to concatenate to the same folder and in the correct order.');
-mkdir(strcat(path,separator,ConcatFolder));
+mkdir(strcat(path,filesep,ConcatFolder));
 animal={};
 for i = 1:length(concatInfo.order)
     actualIdx = concatInfo.order(i);
-    cd(strcat(path,separator,concatInfo.Sessions(actualIdx).name,separator))
+    cd(strcat(path,filesep,concatInfo.Sessions(actualIdx).name,filesep))
     load('ms.mat')
     animal{i}=ms;
     cd(analysis_time)
     copyfile('msvideo.avi',...
-        strcat(path,separator,ConcatFolder,separator,['msvideo' num2str(i) '.avi']))
+        strcat(path,filesep,ConcatFolder,filesep,['msvideo' num2str(i) '.avi']))
     clear ms
 end
-save(strcat(path,separator,ConcatFolder,separator,'animal.mat'),'animal','-v7.3')
+save(strcat(path,filesep,ConcatFolder,filesep,'animal.mat'),'animal','-v7.3')
 disp(['Total duration of Step 1 = ' num2str(toc(Step1Dur)) ' seconds.'])
 %% Step 2: Alignment across sessions
 Step2Dur = tic; 
@@ -82,8 +77,8 @@ concatInfo = excludeBadAlign(concatInfo);
 
 
 disp('Step 2.1: Concatenating videos for final motion correction');
-[CompleteVideo,concatInfo] = ConcatVideos(strcat(path,separator,concatInfo.ConcatFolder),concatInfo);
-save(strcat(path,separator,ConcatFolder,separator,'concatInfo.mat'),'concatInfo','-v7.3')
+[CompleteVideo,concatInfo] = ConcatVideos(strcat(path,filesep,concatInfo.ConcatFolder),concatInfo);
+save(strcat(path,filesep,ConcatFolder,filesep,'concatInfo.mat'),'concatInfo','-v7.3')
 disp(['Total duration of Step 2 = ' num2str(toc(Step2Dur)) ' seconds.'])
 
 %% Step 3: Normalizing the concatenated video for cell detection.
@@ -99,15 +94,15 @@ else
     spatial_downsampling = 2;
 end
 script_start = tic;
-mkdir(strcat(path,separator,ConcatFolder,separator,analysis_time));
-copyfile(strcat(path,separator,ConcatFolder,separator,'FinalConcatNorm1.avi'),...
-        strcat(path,separator,ConcatFolder,separator,analysis_time,separator,'msvideo.avi'))
+mkdir(strcat(path,filesep,ConcatFolder,filesep,analysis_time));
+copyfile(strcat(path,filesep,ConcatFolder,filesep,'FinalConcatNorm1.avi'),...
+        strcat(path,filesep,ConcatFolder,filesep,analysis_time,filesep,'msvideo.avi'))
 
-ms = msGenerateVideoObjConcat(strcat(path,separator,ConcatFolder,separator,analysis_time), concatInfo.equipment, replaceRGBVideo);
+ms = msGenerateVideoObjConcat(strcat(path,filesep,ConcatFolder), concatInfo.equipment, replaceRGBVideo,'FinalConcatNorm');
 ms.analysis_time = analysis_time;
 concatInfo.downSamplingCNMF_E = spatial_downsampling;
 ms.ds = spatial_downsampling;
-save(strcat(path,separator,ConcatFolder, separator, 'msConcat.mat'),'ms');
+save(strcat(path,filesep,ConcatFolder, filesep, 'msConcat.mat'),'ms');
 
 [ms, neuron] = msRunCNMFE_Concat(ms);
 
@@ -115,35 +110,38 @@ analysis_duration = toc(script_start);
 ms.analysis_duration = analysis_duration;
 ms.time = (1:sum(concatInfo.NumberFramesSessions))*(1/concatInfo.FrameRate)*1000;
 
-save(strcat(path,separator,ConcatFolder, separator, 'msConcat.mat'),'ms', '-v7.3');
-save (strcat(path,separator,ConcatFolder, separator, 'neuronFull.mat'), 'neuron', '-v7.3');
+save(strcat(path,filesep,ConcatFolder, filesep, 'msConcat.mat'),'ms', '-v7.3');
+save (strcat(path,filesep,ConcatFolder, filesep, 'neuronFull.mat'), 'neuron', '-v7.3');
 
 disp('all msRun2018 finally done!!!');
 datetime
 disp(['Total duration of Step 4 = ' num2str(toc(Step4Dur)) ' seconds.'])
 
-%% Step 5: Deleting the bad neurons.
+%% Step 5 (optional): Deleting the bad neurons.
 msDeleteROI
 %% Step 6: Project the calcium raw trace, get the deconvolved trace, 
 % and the putative activity of all cells in different sessions
 
 % Get raw and deconvolved calcium traces
-getActivity(strcat(path,separator,ConcatFolder));
+getActivity(strcat(path,filesep,ConcatFolder));
 
 % Get the putative activity of cells (default is output convolv1D and 
 % Foopsi Threshold methods)
+
+%%%****************%%%
 dSFactor = 3; % Downsampling factor to improve computation of neuronal activity 
 % default is 3 for a Frame Rate of 30fps. Results are outputs with the same
 % dimensions as the raw traces (downsmapling is only for computation of
 % activity and it is not applied to the final result).
-deconvConcat(strcat(path,separator,ConcatFolder),concatInfo.FrameRate,dSFactor)
+deconvConcat(strcat(path,filesep,ConcatFolder),concatInfo.FrameRate,dSFactor)
 
 %% Step 7: Final check for noisy neurons
-checkNoisyCells;
+
+matlab.apputil.run('checkNoisyCells')
 
 %% Step 8 (optional): Join all the activity in just one file
 
-joinActivity(strcat(path,separator,ConcatFolder))
+joinActivity(strcat(path,filesep,ConcatFolder))
 
 
 

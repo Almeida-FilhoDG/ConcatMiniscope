@@ -7,21 +7,14 @@ function runConcatStep3to4(path)
 % If you have any questions, please send an email to
 % almeidafilhodg@ucla.edu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Auto-detect operating system
-if ispc
-    separator = '\'; % For pc operating  syste  ms
-else
-    separator = '/'; % For unix (mac, linux) operating systems
-end
-
-cd(strcat(path,separator,'Concatenation'))
+cd(strcat(path,filesep,'Concatenation'))
 %% Step 3: Normalizing the concatenated video for cell detection.
 load('concatInfo.mat')
 analysis_time ='SHtemp';
 % path = concatInfo.path;
 ConcatFolder = concatInfo.ConcatFolder;
-cd(strcat(path,separator,concatInfo.ConcatFolder))
-name = strcat(path,separator,concatInfo.ConcatFolder,separator,'ConcatenatedVideo.avi');
+cd(strcat(path,filesep,concatInfo.ConcatFolder))
+name = strcat(path,filesep,concatInfo.ConcatFolder,filesep,'ConcatenatedVideo.avi');
 Step3Dur = tic;  
 disp('Loading video...')
 CompleteVideo = read_file(name);
@@ -36,15 +29,15 @@ else
     spatial_downsampling = 2;
 end
 script_start = tic;
-mkdir(strcat(path,separator,ConcatFolder,separator,analysis_time));
-copyfile(strcat(path,separator,ConcatFolder,separator,'FinalConcatNorm1.avi'),...
-        strcat(path,separator,ConcatFolder,separator,analysis_time,separator,'msvideo.avi'))
+mkdir(strcat(path,filesep,ConcatFolder,filesep,analysis_time));
+copyfile(strcat(path,filesep,ConcatFolder,filesep,'FinalConcatNorm1.avi'),...
+        strcat(path,filesep,ConcatFolder,filesep,analysis_time,filesep,'msvideo.avi'))
 
-ms = msGenerateVideoObjConcat(strcat(path,separator,ConcatFolder,separator,analysis_time), concatInfo.equipment, replaceRGBVideo);
+ms = msGenerateVideoObjConcat(strcat(path,filesep,ConcatFolder), concatInfo.equipment, replaceRGBVideo,'FinalConcatNorm');
 ms.analysis_time = analysis_time;
 concatInfo.downSamplingCNMF_E = spatial_downsampling;
 ms.ds = spatial_downsampling;
-save(strcat(path,separator,ConcatFolder, separator, 'msConcat.mat'),'ms');
+save(strcat(path,filesep,ConcatFolder, filesep, 'msConcat.mat'),'ms');
 
 [ms, neuron] = msRunCNMFE_Concat(ms);
 
@@ -56,8 +49,8 @@ if isfield(concatInfo,'FrameRate')
 end
 ms.time = (1:sum(concatInfo.NumberFramesSessions))*(1/FR)*1000;
 
-save(strcat(path,separator,ConcatFolder, separator, 'msConcat.mat'),'ms', '-v7.3');
-save (strcat(path,separator,ConcatFolder, separator, 'neuronFull.mat'), 'neuron', '-v7.3');
+save(strcat(path,filesep,ConcatFolder, filesep, 'msConcat.mat'),'ms', '-v7.3');
+save (strcat(path,filesep,ConcatFolder, filesep, 'neuronFull.mat'), 'neuron', '-v7.3');
 
 disp('all msRun2018 finally done!!!');
 datetime

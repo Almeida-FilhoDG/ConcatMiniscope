@@ -3,12 +3,6 @@
 % If you have any questions, please send an email to
 % almeidafilhodg@ucla.edu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Auto-detect operating system
-if ispc
-    separator = '\'; % For pc operating  syste  ms
-else
-    separator = '/'; % For unix (mac, linux) operating systems
-end
 
 %% Step 2: Alignment across sessions
 load('concatInfo.mat')
@@ -24,5 +18,5 @@ concatInfo = excludeBadAlign(concatInfo);
 
 disp('Step 2.1: Concatenating videos for final motion correction');
 [~,concatInfo] = ConcatVideos(path,concatInfo);
-save(strcat(path,separator,'concatInfo.mat'),'concatInfo','-v7.3')
+save(strcat(path,filesep,'concatInfo.mat'),'concatInfo','-v7.3')
 disp(['Total duration of Step 2 = ' num2str(toc(Step2Dur)) ' seconds.'])

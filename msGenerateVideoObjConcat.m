@@ -1,4 +1,4 @@
-function ms = msGenerateVideoObjConcat(dirName, equipment, replaceRGBVideo)
+function ms = msGenerateVideoObjConcat(dirName, equipment, replaceRGBVideo, filePrefix)
 %MSGENERATEMS Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -19,7 +19,6 @@ end
 % find avi and dat files
 aviFiles = dir([dirName filesep '*.avi']);
 if strcmp(equipment,'V3')
-    filePrefix='msCam';
     datFiles = dir([dirName filesep '*.dat']);
     ms.numFiles = 0;
     ms.numFrames = 0;
@@ -28,13 +27,13 @@ if strcmp(equipment,'V3')
     ms.maxFramesPerFile = MAXFRAMESPERFILE;
     
     %find the total number of relevant video files
+
     for i=1:length(aviFiles)
         endIndex = strfind(aviFiles(i).name,'.avi');
         if (~isempty(strfind(aviFiles(i).name,filePrefix)))
             ms.numFiles = max([ms.numFiles str2double(aviFiles(i).name((length(filePrefix)+1):endIndex))]);
         end
     end
-    
     %generate a vidObj for each video file. Also calculate total frames
     for i=1:ms.numFiles
         %         [folder filesep num2str(filePrefix) num2str(i) '.avi']
@@ -112,14 +111,17 @@ elseif strcmp(equipment,'V4')
     for i=1:length(aviFiles)
         endIndex = strfind(aviFiles(i).name,'.avi');
         fname = aviFiles(i).name(1:endIndex-1);
+        if strcmp(fname(1:end-1),filePrefix)
+            ms.numFiles = 0;
+            break
+        end
         ms.numFiles = max([ms.numFiles str2double(fname)]);
     end
     ms.numFiles = ms.numFiles + 1;
     %generate a vidObj for each video file. Also calculate total frames
     for i=1:ms.numFiles
-        if ms.numFiles == 1 && strcmp(fname,'msvideo')
+        if ms.numFiles == 1 && strcmp(fname(1:end-1),filePrefix)
             ms.vidObj{i} = VideoReader([dirName filesep fname '.avi']);
-            ms.dirName = dirName(1:end-7);
         else
             ms.vidObj{i} = VideoReader([dirName filesep num2str(i-1) '.avi']);
         end

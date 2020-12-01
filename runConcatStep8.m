@@ -7,14 +7,7 @@ function runConcatStep8(path)
 % If you have any questions, please send an email to
 % almeidafilhodg@ucla.edu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Auto-detect operating system
-if ispc
-    separator = '\'; % For pc operating  syste  ms
-else
-    separator = '/'; % For unix (mac, linux) operating systems
-end
-
 
 %% Step 8 (optional): Join all the activity in just one file
 
-joinActivity(strcat(path,separator,'Concatenation'))
+joinActivity(strcat(path,filesep,'Concatenation'))

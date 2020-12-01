@@ -10,31 +10,26 @@ function getActivity(path)
 %
 % Developed by Daniel Almeida Filho (Jun, 2020) almeidafilhodg@ucla.edu
 % almeidafilhodg@ucla.edu
-%% Auto-detect operating system
-if ispc
-    separator = '\'; % For pc operating systems
-else
-    separator = '/'; % For unix (mac, linux) operating systems
-end
+
 %%
-load(strcat(path,separator,'concatInfo.mat'));
+load(strcat(path,filesep,'concatInfo.mat'));
 
 
 %%
 NFramesSess = concatInfo.NumberFramesSessions;
 NSessions = length(NFramesSess);
-load(strcat(path,separator,'neuronFull.mat'),'neuron');
-load(strcat(path,separator,'msConcat.mat'),'ms');
+load(strcat(path,filesep,'neuronFull.mat'),'neuron');
+load(strcat(path,filesep,'msConcat.mat'),'ms');
 
 valid_roi = logical(ones(size(neuron.C,1),1));
-if exist(strcat(path,separator,'validROIs.mat'))
-    load(strcat(path,separator,'validROIs.mat'));
+if exist(strcat(path,filesep,'validROIs.mat'))
+    load(strcat(path,filesep,'validROIs.mat'));
 end
 %% Create Video
-Video = read_file(strcat(path,separator,'ConcatenatedVideo.avi'));
+Video = read_file(strcat(path,filesep,'ConcatenatedVideo.avi'));
 %%
 for vid = 1:NSessions
-    newObj=VideoWriter(strcat(path,separator,['msvideo' num2str(vid) '.avi']),'Grayscale AVI');
+    newObj=VideoWriter(strcat(path,filesep,['msvideo' num2str(vid) '.avi']),'Grayscale AVI');
     open(newObj);
     in = sum(NFramesSess(1:vid))-NFramesSess(vid)+1;
     out = sum(NFramesSess(1:vid));
@@ -44,8 +39,8 @@ for vid = 1:NSessions
     
     %%%%%% Compute activity
     
-    file_to_the_raw_data=strcat(path,separator,['msvideo' num2str(vid) '.avi']);
-    load(strcat(path,separator,'neuronFull.mat'),'neuron');
+    file_to_the_raw_data=strcat(path,filesep,['msvideo' num2str(vid) '.avi']);
+    load(strcat(path,filesep,'neuronFull.mat'),'neuron');
     neuron.A = neuron.A + 1e-6;
     %%%%%%%%%%%% Parameters
     neuron.select_data(file_to_the_raw_data);  % neuron is the result from Y_new
@@ -60,8 +55,8 @@ for vid = 1:NSessions
     neuron.getReady(pars_envs);
     neuron.initTemporal();
     
-    delete(strcat(path,separator,'msvideo*'))
-    [status, message, ~] = rmdir(strcat(path,separator,'msvideo*'),'s');
+    delete(strcat(path,filesep,'msvideo*'))
+    [status, message, ~] = rmdir(strcat(path,filesep,'msvideo*'),'s');
     
     
     %%%%% Get important variables (C and C_raw)
@@ -70,7 +65,7 @@ for vid = 1:NSessions
     tempNeuron.C_raw = neuron.C_raw(valid_roi,:);
     clear neuron
     neuron = tempNeuron;
-    save(strcat(path,separator,['neuronVid_' num2str(vid) '.mat']),'neuron')
+    save(strcat(path,filesep,['neuronVid_' num2str(vid) '.mat']),'neuron')
     
 end
 

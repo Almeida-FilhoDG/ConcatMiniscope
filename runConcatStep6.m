@@ -7,14 +7,8 @@ function runConcatStep6(path)
 % If you have any questions, please send an email to
 % almeidafilhodg@ucla.edu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Auto-detect operating system
-if ispc
-    separator = '\'; % For pc operating  syste  ms
-else
-    separator = '/'; % For unix (mac, linux) operating systems
-end
 
-cd(strcat(path,separator,'Concatenation'))
+cd(strcat(path,filesep,'Concatenation'))
 load('concatInfo.mat')
 ConcatFolder = concatInfo.ConcatFolder;
 
@@ -22,7 +16,7 @@ ConcatFolder = concatInfo.ConcatFolder;
 % and the putative activity of all cells in different sessions
 
 % Get raw and deconvolved calcium traces
-getActivity(strcat(path,separator,ConcatFolder));
+getActivity(strcat(path,filesep,ConcatFolder));
 
 % Get the putative activity of cells (default is output convolv1D and 
 % Foopsi Threshold methods)
@@ -30,4 +24,4 @@ dSFactor = 3; % Downsampling factor to improve computation of neuronal activity
 % default is 3 for a Frame Rate of 30fps. Results are outputs with the same
 % dimensions as the raw traces (downsmapling is only for computation of
 % activity and it is not applied to the final result).
-deconvConcat(strcat(path,separator,ConcatFolder),concatInfo.FrameRate,dSFactor)
+deconvConcat(strcat(path,filesep,ConcatFolder),concatInfo.FrameRate,dSFactor)

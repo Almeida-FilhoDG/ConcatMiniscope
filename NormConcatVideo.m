@@ -1,10 +1,5 @@
 function Matrix = NormConcatVideo(Matrix,concatInfo)
 %%% Normalize the concatenated videos to enhance cell detection
-if ispc
-    separator = '\'; % For pc operating  syste  ms
-else
-    separator = '/'; % For unix (mac, linux) operating systems
-end
 
 Dims = size(Matrix);
 Matrix = single(reshape(Matrix,prod(Dims(1:2)),Dims(3)));
@@ -41,7 +36,7 @@ Matrix = reshape(Matrix,Dims(1),Dims(2),Dims(3));
 
 
 
-writerObj = VideoWriter([concatInfo.path separator concatInfo.ConcatFolder separator 'FinalConcatNorm1.avi'],'Grayscale AVI');
+writerObj = VideoWriter([concatInfo.path filesep concatInfo.ConcatFolder filesep 'FinalConcatNorm1.avi'],'Grayscale AVI');
 writerObj.FrameRate = concatInfo.FrameRate;
 open(writerObj);
 writeVideo(writerObj,Matrix);
