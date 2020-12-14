@@ -11,6 +11,7 @@ cd(strcat(path,filesep,'Concatenation'))
 %% Step 3: Normalizing the concatenated video for cell detection.
 load('concatInfo.mat')
 analysis_time ='SHtemp';
+replaceRGBVideo = false;
 % path = concatInfo.path;
 ConcatFolder = concatInfo.ConcatFolder;
 cd(strcat(path,filesep,concatInfo.ConcatFolder))
