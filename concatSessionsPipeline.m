@@ -20,7 +20,7 @@ analysis_time ='SHtemp';
 ConcatFolder = 'Concatenation';
 concatInfo.ConcatFolder = ConcatFolder;
 %%%****************%%%
-concatInfo.order = [1 2 3]; % Order in which the files in "concatInfo.Sessions" 
+concatInfo.order = [1 2]; % Order in which the files in "concatInfo.Sessions" 
 % will be concatenated. 
 nSessions = size(concatInfo.Sessions,1);
 mkdir(strcat(path,filesep,ConcatFolder));
@@ -29,8 +29,9 @@ save(strcat(path,filesep,ConcatFolder,filesep,'concatInfo.mat'),'concatInfo','-v
 %% Step 1: Motion correction of single sessions (NoRMCorre)
 Step1Dur = tic; 
 disp('Step 1: Applying motion correction on single sessions.');
-plotFlag = false;
-replaceRGBVideo = false;
+plotFlag = false; %Plot the results of motion correction
+ROIflag = false; %Choose true if you want to select a specific ROI in the FOV for each separate session
+replaceRGBVideo = false; %Choose true if you want to replace RGB videos by their gray scale version
 for i = 1:nSessions
     cd(strcat(path,filesep,concatInfo.Sessions(i).name))
     ms = msGenerateVideoObjConcat(pwd, concatInfo.equipment, replaceRGBVideo,'msCam');
@@ -44,7 +45,7 @@ for i = 1:nSessions
     mkdir(strcat(pwd,filesep,analysis_time));
     save([ms.dirName filesep 'ms.mat'],'ms');
     disp(['Working on Session: ' num2str(i) ' of ' num2str(nSessions)])
-    ms = msNormCorreConcat(ms,isnonrigid,plotFlag);
+    ms = msNormCorreConcat(ms,isnonrigid,ROIflag,plotFlag);
     save([ms.dirName filesep 'ms.mat'],'ms');
     clear ms
 end
@@ -68,6 +69,10 @@ end
 save(strcat(path,filesep,ConcatFolder,filesep,'animal.mat'),'animal','-v7.3')
 disp(['Total duration of Step 1 = ' num2str(toc(Step1Dur)) ' seconds.'])
 %% Step 2: Alignment across sessions
+dsFOVflag = true; %Choose true if you want to downsample the FOV by 
+% selecting an ROI from the concatenated video or if you want to downsample 
+% the FOV of the concatenated video to the non-zero pixels (useful when an ROI was 
+% selected from the FOV before motion correction)
 Step2Dur = tic; 
 disp('Step 2: Aligning between sessions');
 [concatInfo.AllAlignment,concatInfo.AllCorrelation]=AlignAcrossSessions(animal);
@@ -77,7 +82,7 @@ concatInfo = excludeBadAlign(concatInfo);
 
 
 disp('Step 2.1: Concatenating videos for final motion correction');
-[CompleteVideo,concatInfo] = ConcatVideos(strcat(path,filesep,concatInfo.ConcatFolder),concatInfo);
+[CompleteVideo,concatInfo] = ConcatVideos(strcat(path,filesep,concatInfo.ConcatFolder),concatInfo,dsFOVflag);
 save(strcat(path,filesep,ConcatFolder,filesep,'concatInfo.mat'),'concatInfo','-v7.3')
 disp(['Total duration of Step 2 = ' num2str(toc(Step2Dur)) ' seconds.'])
 
@@ -89,7 +94,7 @@ disp(['Total duration of Step 3 = ' num2str(toc(Step3Dur)) ' seconds.'])
 %% Step 4: Perform cell detection (CNMF-E).
 Step4Dur = tic; 
 if ismember(concatInfo.equipment,{'v4','V4'})
-    spatial_downsampling = 1;
+    spatial_downsampling = 1.5;
 else
     spatial_downsampling = 2;
 end

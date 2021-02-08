@@ -1,4 +1,4 @@
-function [CompleteVideo,concatInfo] = ConcatVideos(path,concatInfo)
+function [CompleteVideo,concatInfo] = ConcatVideos(path,concatInfo,dsFOVflag)
 
 
 % INPUT:
@@ -75,6 +75,19 @@ for i = 1:length(positions)
 end
 concatInfo.NumberFramesSessions = NumberOfFrames;
 concatInfo.CutFromBorders = Lims;
+
+if dsFOVflag
+    [tempVideo,tempMask] = selectROI(CompleteVideo,true);
+    if isnan(tempMask)
+        tempMask = CompleteVideo>0;
+        tempMask = uint8(sum(tempMask,3)>(size(tempMask,3)*.95));
+        Xidx = sum(tempMask)~=0;
+        Yidx = sum(tempMask,2)~=0;
+        tempVideo = CompleteVideo(Yidx,Xidx,:);
+    end
+    CompleteVideo=tempVideo;
+end
+
 
 % Saving Concatenated Videos
 newVideoObj = VideoWriter([path '\ConcatenatedVideo.avi'],'Grayscale AVI');

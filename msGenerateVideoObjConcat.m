@@ -139,7 +139,7 @@ elseif strcmp(equipment,'V4')
     %read timestamp information
     for i=1:length(datFiles)
         if strcmp(datFiles(i).name,'timeStamps.csv')
-            dataArray = readmatrix([dirName filesep 'timeStamps.csv']);
+            dataArray = table2array(readtable([dirName filesep 'timeStamps.csv']));
             ms.time = dataArray(:, 2);
             buffer1 = dataArray(:, 3);
             ms.time(1) = 0;
@@ -165,11 +165,11 @@ end
         else
             writerObj = VideoWriter([videoObj.Path filesep 'gray' videoObj.Name],'Grayscale AVI');
         end
-        BuffVideo = nan(videoObj.Width,videoObj.Height,videoObj.NumberOfFrames);
-        ii = 1;
-        while hasFrame(videoObj)
+        NumFrames = videoObj.NumberOfFrames;
+        BuffVideo = nan(videoObj.Width,videoObj.Height,NumFrames);
+
+        for ii = 1:NumFrames
             BuffVideo(:,:,ii) = rgb2gray(readFrame(videoObj));
-            ii = ii+1;
         end
         open(writerObj);
         writeVideo(writerObj,uint8(BuffVideo));

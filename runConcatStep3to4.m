@@ -25,7 +25,7 @@ disp(['Total duration of Step 3 = ' num2str(toc(Step3Dur)) ' seconds.'])
 %% Step 4: Perform cell detection (CNMF-E).
 Step4Dur = tic; 
 if ismember(concatInfo.equipment,{'v4','V4'})
-    spatial_downsampling = 1;
+    spatial_downsampling = 1.5;
 else
     spatial_downsampling = 2;
 end

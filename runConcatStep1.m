@@ -31,8 +31,9 @@ save(strcat(path,filesep,ConcatFolder,filesep,'concatInfo.mat'),'concatInfo','-v
 %% Step 1: Motion correction of single sessions (NoRMCorre)
 Step1Dur = tic; 
 disp('Step 1: Applying motion correction on single sessions.');
-plotFlag = false;
-replaceRGBVideo = true;
+plotFlag = false; %Plot the results of motion correction
+ROIflag = false; %Choose true if you want to select a specific ROI in the FOV for each separate session
+replaceRGBVideo = false; %Choose true if you want to replace RGB videos by their gray scale version
 for i = 1:nSessions
     cd(strcat(path,filesep,concatInfo.Sessions(i).name))
     ms = msGenerateVideoObjConcat(pwd, concatInfo.equipment, replaceRGBVideo, 'msCam');
@@ -46,7 +47,7 @@ for i = 1:nSessions
     mkdir(strcat(pwd,filesep,analysis_time));
     save([ms.dirName filesep 'ms.mat'],'ms');
     disp(['Working on Session: ' num2str(i) ' of ' num2str(nSessions)])
-    ms = msNormCorreConcat(ms,isnonrigid,plotFlag);
+    ms = msNormCorreConcat(ms,isnonrigid,ROIflag,plotFlag);
     save([ms.dirName filesep 'ms.mat'],'ms');
     clear ms
 end

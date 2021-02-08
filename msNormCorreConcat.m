@@ -1,4 +1,4 @@
-function ms = msNormCorreConcat(ms,isnonrigid,plotFlag)
+function ms = msNormCorreConcat(ms,isnonrigid,ROIflag,plotFlag)
 % Performs fast, rigid registration (option for non-rigid also available).
 % Relies on NormCorre (Paninski lab). Rigid registration works fine for
 % large lens (1-2mm) GRIN lenses, while non-rigid might work better for
@@ -12,6 +12,7 @@ warning off all
 
 if nargin<3
     plotFlag = false;
+    ROIflag=false;
 end
 
 %% Filtering parameters
@@ -45,7 +46,15 @@ for video_i = 1:ms.numFiles
     end
     % read data and convert to single
     Yf = read_file(name);
-    Yf = single(Yf);
+    if video_i == 1 
+        if ROIflag
+            [~,mask] = selectROI(Yf,false); 
+            mask = uint8(mask);
+        else
+            mask = uint8(ones(size(Yf)));
+        end
+    end
+    Yf = single(Yf.*repmat(mask,1,1,size(Yf,3)));
     Yf = downsample_data(Yf,'space',1,ms.ds,1);
     
     Y = imfilter(Yf,psf,'symmetric');
