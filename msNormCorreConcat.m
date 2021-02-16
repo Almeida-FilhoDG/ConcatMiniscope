@@ -51,7 +51,7 @@ for video_i = 1:ms.numFiles
             [~,mask] = selectROI(Yf,false); 
             mask = uint8(mask);
         else
-            mask = uint8(ones(size(Yf)));
+            mask = uint8(ones(size(Yf,1),size(Yf,2)));
         end
     end
     Yf = single(Yf.*repmat(mask,1,1,size(Yf,3)));

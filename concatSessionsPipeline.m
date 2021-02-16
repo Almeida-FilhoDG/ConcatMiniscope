@@ -10,7 +10,7 @@ concatInfo.spatial_downsampling = 2; % (Recommended range: 2 - 4. Downsampling s
 path = pwd;
 concatInfo.path = path;
 %%%****************%%%
-concatInfo.equipment = 'V4'; %equipment used for imaging.
+concatInfo.equipment = 'V3'; %equipment used for imaging.
 %%%****************%%%
 isnonrigid = true; % If true, performs non-rigid registration (slower). If false, rigid alignment (faster).
 % non-rigid is preferred within sessions.

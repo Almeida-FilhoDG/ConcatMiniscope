@@ -169,7 +169,7 @@ end
         BuffVideo = nan(videoObj.Width,videoObj.Height,NumFrames);
 
         for ii = 1:NumFrames
-            BuffVideo(:,:,ii) = rgb2gray(readFrame(videoObj));
+            BuffVideo(:,:,ii) = rgb2gray(read(videoObj,ii));
         end
         open(writerObj);
         writeVideo(writerObj,uint8(BuffVideo));
