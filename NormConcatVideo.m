@@ -1,4 +1,4 @@
-function Matrix = NormConcatVideo(Matrix,concatInfo)
+function Matrix = NormConcatVideo(Matrix,concatInfo,savingPath)
 %%% Normalize the concatenated videos to enhance cell detection
 
 Dims = size(Matrix);
@@ -8,6 +8,13 @@ HalthWin = ceil(win/2);
 Sizes = concatInfo.NumberFramesSessions;
 
 nPix = size(Matrix,1);
+if prod(Dims) <= 2e6
+    subSample = single(1:prod(Dims));
+else
+    subSample = randperm(prod(Dims),2e6);
+end
+IQR = iqr(Matrix(subSample));
+
 in = 1;
 for sess = 1:length(Sizes)
     idxs = in:sum(Sizes(1:sess));
@@ -17,16 +24,14 @@ for sess = 1:length(Sizes)
         if mod(i,round(nPix/20))==0
             disp(['Smoothing at ' num2str((i/nPix)*100) '%'])
         end
-        actual2 = conv(actual(i,:),rectwin(win)/win,'same');
+        actual2 = (actual(i,:)-median(actual(i,:)))/IQR;
+        actual2 = conv(actual2,rectwin(win)/win,'same');        
         surrog = nanmedian(actual2(HalthWin+1:end-HalthWin));
         actual2([1:HalthWin length(actual2)-HalthWin+1:length(actual2)]) = surrog;
         actual(i,:)=actual2;
     end
-    actual2 = iqr(actual')';
-    actual2(actual2<1)=1;
-    actual3 = ((actual-repmat(nanmedian(actual')',1,size(actual,2)))./repmat(actual2,1,size(actual,2)));
-    
-    Matrix(:,idxs) = actual3;
+
+    Matrix(:,idxs) = actual;
     in=sum(Sizes(1:sess))+1;
 end
 
@@ -36,7 +41,7 @@ Matrix = reshape(Matrix,Dims(1),Dims(2),Dims(3));
 
 
 
-writerObj = VideoWriter([concatInfo.path filesep concatInfo.ConcatFolder filesep 'FinalConcatNorm1.avi'],'Grayscale AVI');
+writerObj = VideoWriter([savingPath filesep 'FinalConcatNorm1.avi'],'Grayscale AVI');
 writerObj.FrameRate = concatInfo.FrameRate;
 open(writerObj);
 writeVideo(writerObj,Matrix);

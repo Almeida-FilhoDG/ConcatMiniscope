@@ -54,6 +54,9 @@ for vid = 1:NSessions
 
     neuron.getReady(pars_envs);
     neuron.initTemporal();
+    neuron.update_background_parallel();
+    neuron.update_temporal_parallel();
+    
     
     delete(strcat(path,filesep,'msvideo*'))
     [status, message, ~] = rmdir(strcat(path,filesep,'msvideo*'),'s');

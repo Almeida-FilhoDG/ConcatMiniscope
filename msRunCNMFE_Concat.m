@@ -17,7 +17,7 @@ nam = neuron.select_data(nam);  %if nam is [], then select data interactively
 %% parameters
 % -------------------------    COMPUTATION    -------------------------  %
 pars_envs = struct('memory_size_to_use', 50, ...   % GB, memory space you allow to use in MATLAB
-    'memory_size_per_patch', 4.0, ...   % GB, space for loading data within one patch
+    'memory_size_per_patch', 10.0, ...   % GB, space for loading data within one patch
     'patch_dims', [42, 42]);  %GB, patch size
 % -------------------------      SPATIAL      -------------------------  %
 include_residual = false; % If true, look for neurons in the residuals
@@ -36,7 +36,7 @@ if with_dendrites
     updateA_dist = neuron.options.dist;
 else
     % determine the search locations by selecting a round area
-    updateA_search_method = 'ellipse'; %#ok<UNRCH>
+    updateA_search_method = 'ellipse'; 
     updateA_dist = 5;
     updateA_bSiz = neuron.options.dist;
 end
@@ -44,7 +44,7 @@ spatial_constraints = struct('connected', true, 'circular', false);  % you can i
 spatial_algorithm = 'hals_thresh';
 
 % -------------------------      TEMPORAL     -------------------------  %
-Fs = 30;             % frame rate
+Fs = ms.FrameRate;             % frame rate
 tsub = 5;           % temporal downsampling factor
 deconv_flag = true; % Perform deconvolution if it's true
 deconv_options = struct('type', 'ar1', ... % model of the calcium traces. {'ar1', 'ar2'}

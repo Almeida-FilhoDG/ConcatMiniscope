@@ -8,7 +8,9 @@ function [CompleteVideo,concatInfo] = ConcatVideos(path,concatInfo,dsFOVflag)
 % placed on the same folder as a 1xN cell, in which N is the number of
 % videos to be concatenated in the same order as the "msvideo" files.
 
-videos = dir([path '\msvideo*.avi']);
+videos = struct2cell(dir([path '\msvideo*.avi']));
+videos = videos(1,:);
+[~,videosOrder] = natsort(videos);
 nVideos = length(videos);
 Alignment = concatInfo.FinalAlignment;
 ref = concatInfo.refSession;
@@ -36,7 +38,7 @@ emptyFlag = [];
 for pos = 1:length(positions)
     actPos = positions(pos);
     if ~isempty(Alignment{actPos})
-        videoObj = VideoReader([path '\' videos(pos).name]);
+        videoObj = VideoReader([path '\' videos{videosOrder(pos)}]);
         NFrames = videoObj.NumberOfFrames;
         Width = videoObj.Width;
         Height = videoObj.Height;

@@ -6,6 +6,11 @@ colormap gray
 hLarge = fspecial('average', 40);
 hSmall = fspecial('average', 3);
 [optimizer,metric] = imregconfig('multimodal');
+optimizer.MaximumIterations=300;
+optimizer.GrowthFactor=1.01;
+optimizer.Epsilon=1.5e-8;
+optimizer.InitialRadius=6.25e-4;
+
 NSess = length(animal);
 idx=1;
 while isempty(animal{idx})

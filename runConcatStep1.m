@@ -1,7 +1,7 @@
 function runConcatStep1(path,equipment)
 
 
-eval(['cd ' path])
+cd(path)
 
 %% Pipeline for the proper concatenation of miniscope data across sessions
 % Developed by Daniel Almeida Filho Mar/2020 (SilvaLab - UCLA)
@@ -18,7 +18,6 @@ isnonrigid = true; % If true, performs non-rigid registration (slower). If false
 % non-rigid is preferred within sessions.
 concatInfo.Sessions = dir(path);
 concatInfo.Sessions = concatInfo.Sessions(3:end,:);
-script_start = tic;
 analysis_time ='SHtemp';
 ConcatFolder = 'Concatenation';
 concatInfo.ConcatFolder = ConcatFolder;
@@ -56,7 +55,6 @@ if ~isfield(concatInfo,'FrameRate')
 end
 %%% Place all the motion corrected videos in the same folder
 disp('Step 1.1: Copying videos to concatenate to the same folder and in the correct order.');
-mkdir(strcat(path,filesep,ConcatFolder));
 animal={};
 for i = 1:nSessions
     actualIdx = concatInfo.order(i);

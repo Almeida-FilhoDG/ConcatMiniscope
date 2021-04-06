@@ -10,7 +10,7 @@ concatInfo.spatial_downsampling = 2; % (Recommended range: 2 - 4. Downsampling s
 path = pwd;
 concatInfo.path = path;
 %%%****************%%%
-concatInfo.equipment = 'V3'; %equipment used for imaging.
+concatInfo.equipment = 'V4'; %equipment used for imaging.
 %%%****************%%%
 isnonrigid = true; % If true, performs non-rigid registration (slower). If false, rigid alignment (faster).
 % non-rigid is preferred within sessions.
@@ -20,7 +20,7 @@ analysis_time ='SHtemp';
 ConcatFolder = 'Concatenation';
 concatInfo.ConcatFolder = ConcatFolder;
 %%%****************%%%
-concatInfo.order = [1 2]; % Order in which the files in "concatInfo.Sessions" 
+concatInfo.order = [1 2 3]; % Order in which the files in "concatInfo.Sessions" 
 % will be concatenated. 
 nSessions = size(concatInfo.Sessions,1);
 mkdir(strcat(path,filesep,ConcatFolder));
@@ -88,7 +88,7 @@ disp(['Total duration of Step 2 = ' num2str(toc(Step2Dur)) ' seconds.'])
 
 %% Step 3: Normalizing the concatenated video for cell detection.
 Step3Dur = tic; 
-[~] = NormConcatVideo(CompleteVideo,concatInfo);
+[~] = NormConcatVideo(CompleteVideo,concatInfo,[path filesep ConcatFolder]);
 disp(['Total duration of Step 3 = ' num2str(toc(Step3Dur)) ' seconds.'])
 
 %% Step 4: Perform cell detection (CNMF-E).
@@ -107,6 +107,7 @@ ms = msGenerateVideoObjConcat(strcat(path,filesep,ConcatFolder), concatInfo.equi
 ms.analysis_time = analysis_time;
 concatInfo.downSamplingCNMF_E = spatial_downsampling;
 ms.ds = spatial_downsampling;
+ms.FrameRate = concatInfo.FrameRate;
 save(strcat(path,filesep,ConcatFolder, filesep, 'msConcat.mat'),'ms');
 
 [ms, neuron] = msRunCNMFE_Concat(ms);
@@ -118,7 +119,7 @@ ms.time = (1:sum(concatInfo.NumberFramesSessions))*(1/concatInfo.FrameRate)*1000
 save(strcat(path,filesep,ConcatFolder, filesep, 'msConcat.mat'),'ms', '-v7.3');
 save (strcat(path,filesep,ConcatFolder, filesep, 'neuronFull.mat'), 'neuron', '-v7.3');
 
-disp('all msRun2018 finally done!!!');
+disp('all msRun finally done!!!');
 datetime
 disp(['Total duration of Step 4 = ' num2str(toc(Step4Dur)) ' seconds.'])
 

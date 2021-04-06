@@ -7,7 +7,7 @@
 %% Step 2: Alignment across sessions
 load('concatInfo.mat')
 load('animal.mat')
-dsFOVflag = true; %Choose true if you want to downsample the FOV by 
+dsFOVflag = false; %Choose true if you want to downsample the FOV by 
 % selecting an ROI from the concatenated video or if you want to downsample 
 % the FOV of the concatenated video to the non-zero pixels (useful when an ROI was 
 % selected from the FOV before motion correction)

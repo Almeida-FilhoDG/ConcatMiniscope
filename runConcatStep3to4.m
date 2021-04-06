@@ -14,12 +14,12 @@ analysis_time ='SHtemp';
 replaceRGBVideo = false;
 % path = concatInfo.path;
 ConcatFolder = concatInfo.ConcatFolder;
-cd(strcat(path,filesep,concatInfo.ConcatFolder))
-name = strcat(path,filesep,concatInfo.ConcatFolder,filesep,'ConcatenatedVideo.avi');
+cd(strcat(path,filesep,ConcatFolder))
+name = strcat(path,filesep,ConcatFolder,filesep,'ConcatenatedVideo.avi');
 Step3Dur = tic;  
 disp('Loading video...')
 CompleteVideo = read_file(name);
-[~] = NormConcatVideo(CompleteVideo,concatInfo);
+[~] = NormConcatVideo(CompleteVideo,concatInfo,[path filesep ConcatFolder]);
 disp(['Total duration of Step 3 = ' num2str(toc(Step3Dur)) ' seconds.'])
 
 %% Step 4: Perform cell detection (CNMF-E).
@@ -38,6 +38,7 @@ ms = msGenerateVideoObjConcat(strcat(path,filesep,ConcatFolder), concatInfo.equi
 ms.analysis_time = analysis_time;
 concatInfo.downSamplingCNMF_E = spatial_downsampling;
 ms.ds = spatial_downsampling;
+ms.FrameRate = concatInfo.FrameRate;
 save(strcat(path,filesep,ConcatFolder, filesep, 'msConcat.mat'),'ms');
 
 [ms, neuron] = msRunCNMFE_Concat(ms);
@@ -53,7 +54,7 @@ ms.time = (1:sum(concatInfo.NumberFramesSessions))*(1/FR)*1000;
 save(strcat(path,filesep,ConcatFolder, filesep, 'msConcat.mat'),'ms', '-v7.3');
 save (strcat(path,filesep,ConcatFolder, filesep, 'neuronFull.mat'), 'neuron', '-v7.3');
 
-disp('all msRun2018 finally done!!!');
+disp('all msRun finally done!!!');
 datetime
 disp(['Total duration of Step 4 = ' num2str(toc(Step4Dur)) ' seconds.'])
 end

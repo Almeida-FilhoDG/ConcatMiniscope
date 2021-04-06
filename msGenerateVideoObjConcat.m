@@ -160,11 +160,7 @@ elseif strcmp(equipment,'V4')
     end
 end
     function convertToGray(videoObj,replace)
-        if replace
-            writerObj = VideoWriter([videoObj.Path filesep videoObj.Name],'Grayscale AVI');
-        else
-            writerObj = VideoWriter([videoObj.Path filesep 'gray' videoObj.Name],'Grayscale AVI');
-        end
+        writerObj = VideoWriter([videoObj.Path filesep 'gray' videoObj.Name],'Grayscale AVI');
         NumFrames = videoObj.NumberOfFrames;
         BuffVideo = nan(videoObj.Width,videoObj.Height,NumFrames);
 
@@ -174,6 +170,9 @@ end
         open(writerObj);
         writeVideo(writerObj,uint8(BuffVideo));
         close(writerObj);
+        if replace
+            delete([videoObj.Path filesep videoObj.Name])
+        end
     end
 end
 
