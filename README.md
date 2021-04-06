@@ -5,7 +5,7 @@ Requirements:
 1. Matlab 2016 or later
 2. [NormCorre algorithm](https://github.com/flatironinstitute/NoRMCorre) for motion correction 
 3. [CNMF-e algorithm](https://github.com/zhoupc/CNMF_E) for cell detection
-4. [msDeleteROI algorith](https://github.com/ayallavi/msDeleteROI): Neuron Deletion GUI used for deleting ROIs that were mistakenly detected as neurons (optional)
+4. [msDeleteROI algorithm](https://github.com/ayallavi/msDeleteROI): Neuron Deletion GUI used for deleting ROIs that were mistakenly detected as neurons (optional)
 
 Obs.: The current repository has a version of CNMFe and NoRMCorre (`MatlabPath_CNMFe_and_NoRMCorre` folder) which shows minor changes from the original repositories for updating or speed optimization.
 # Getting Started
