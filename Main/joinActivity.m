@@ -12,10 +12,11 @@ function joinActivity(path,order,flag)
 %   flag: Scalar with the code to define the method of calculation of
 %   neuronal putative activity that will be used for the downstream analysis.
 %   0 => Use the Convolution first derivative method (convolve1D));
-%   1 => Use the Foopsi Thresholded method (CalcFoopsiThresh); (Default = 0).
+%   1 => Use the Foopsi Thresholded method (CalcFoopsiThresh); (Default = 1).
 %
 % Developed by Daniel Almeida Filho (Jun, 2020) almeidafilhodg@ucla.edu
-
+% Updated by by Daniel Almeida Filho (Aug, 2021) to account for discarded
+% sessions.
 
 
 files = dir([path filesep 'neuronVid*']);
@@ -28,7 +29,7 @@ files = files(filesOrder);
 nFiles = length(files);
 load(strcat(path,filesep,'NoisyCells.mat'),'NoisyCells')
 if nargin < 3
-    flag = 0;
+    flag = 1;
     if nargin<2
         order = 1:nFiles;
     end
@@ -36,14 +37,30 @@ end
 
 for i = 1:nFiles
     load([path filesep files(i).name],'neuron');
-    nNeurs = size(neuron.C_raw,1);
-    idxValids = true(1,nNeurs);
-    idxValids(NoisyCells) = false;
-    concatResult.C_raw{order(i)} = neuron.C_raw(idxValids,:);
-    if flag == 0
-        concatResult.FR{order(i)} = neuron.convolve1D(idxValids,:);
+    if isempty(neuron)
+        continue
     else
-        concatResult.FR{order(i)} = neuron.FoopThresh(idxValids,:);
+        nNeurs = size(neuron.C_raw,1);
+        break
+    end
+end
+
+for i = 1:nFiles
+    load([path filesep files(i).name],'neuron');
+    %     nNeurs = size(neuron.C_raw,1);
+    if isempty(neuron)
+        concatResult.C_raw{order(i)} = [];
+        concatResult.FR{order(i)} = [];
+        continue
+    else
+        idxValids = true(1,nNeurs);
+        idxValids(NoisyCells) = false;
+        concatResult.C_raw{order(i)} = neuron.C_raw(idxValids,:);
+        if flag == 0
+            concatResult.FR{order(i)} = neuron.convolve1D(idxValids,:);
+        else
+            concatResult.FR{order(i)} = neuron.FoopThresh(idxValids,:);
+        end
     end
 end
 
@@ -57,17 +74,31 @@ if ~isempty(files)
     files = files(filesOrder);
     nFiles = length(files);
     load(strcat(path,filesep,'NoisyCellsProj.mat'),'NoisyCells')
-    
     for i = 1:nFiles
         load([path filesep files(i).name],'neuron');
-        nNeurs = size(neuron.C_raw,1);
-        idxValids = true(1,nNeurs);
-        idxValids(NoisyCells) = false;
-        concatResult.Proj.C_raw{order(i)} = neuron.C_raw(idxValids,:);
-        if flag == 0
-            concatResult.Proj.FR{order(i)} = neuron.convolve1D(idxValids,:);
+        if isempty(neuron)
+            continue
         else
-            concatResult.Proj.FR{order(i)} = neuron.FoopThresh(idxValids,:);
+            nNeurs = size(neuron.C_raw,1);
+            break
+        end
+    end
+    for i = 1:nFiles
+        load([path filesep files(i).name],'neuron');
+        %         nNeurs = size(neuron.C_raw,1);
+        if isempty(neuron)
+            concatResult.Proj.C_raw{order(i)} = [];
+            concatResult.Proj.FR{order(i)} = [];
+            continue
+        else
+            idxValids = true(1,nNeurs);
+            idxValids(NoisyCells) = false;
+            concatResult.Proj.C_raw{order(i)} = neuron.C_raw(idxValids,:);
+            if flag == 0
+                concatResult.Proj.FR{order(i)} = neuron.convolve1D(idxValids,:);
+            else
+                concatResult.Proj.FR{order(i)} = neuron.FoopThresh(idxValids,:);
+            end
         end
     end
 end

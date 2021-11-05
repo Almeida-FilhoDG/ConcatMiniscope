@@ -26,6 +26,9 @@ nFiles = length(files);
 
 for i = 1:nFiles
     load([path filesep files(i).name],'neuron');
+    if isempty(neuron)
+        continue
+    end
     actual = neuron.C_raw;
     if flag == 0 || flag == 2
         [neuron.convolve1D,neuron.HighNoiseNeurons] = convolve1D(actual,fps,dSFactor);
@@ -46,6 +49,9 @@ if ~isempty(files)
     
     for i = 1:nFiles
         load([path filesep files(i).name],'neuron');
+        if isempty(neuron)
+            continue
+        end
         actual = neuron.C_raw;
         if flag == 0 || flag == 2
             [neuron.convolve1D,neuron.HighNoiseNeurons] = convolve1D(actual,fps,dSFactor);

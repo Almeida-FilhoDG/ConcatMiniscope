@@ -16,7 +16,7 @@ nam = neuron.select_data(nam);  %if nam is [], then select data interactively
 
 %% parameters
 % -------------------------    COMPUTATION    -------------------------  %
-pars_envs = struct('memory_size_to_use', 50, ...   % GB, memory space you allow to use in MATLAB
+pars_envs = struct('memory_size_to_use', 60, ...   % GB, memory space you allow to use in MATLAB
     'memory_size_per_patch', 10.0, ...   % GB, space for loading data within one patch
     'patch_dims', [42, 42]);  %GB, patch size
 % -------------------------      SPATIAL      -------------------------  %

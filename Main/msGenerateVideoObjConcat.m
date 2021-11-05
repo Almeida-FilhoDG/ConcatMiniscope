@@ -167,6 +167,13 @@ end
         for ii = 1:NumFrames
             BuffVideo(:,:,ii) = rgb2gray(read(videoObj,ii));
         end
+        
+        if size(BuffVideo,3)<4 %workaround because the writeVideo function 
+            %gets confused when there is a videa with only 3 frames. 
+            % It misunderstands it as an RGB 1-frame video.
+            BuffVideo = reshape(BuffVideo,size(BuffVideo,1),size(BuffVideo,2),...
+                1,size(BuffVideo,3));
+        end
         open(writerObj);
         writeVideo(writerObj,uint8(BuffVideo));
         close(writerObj);

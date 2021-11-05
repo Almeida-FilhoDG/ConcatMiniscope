@@ -7,7 +7,7 @@ function ms = msNormCorreConcat(ms,isnonrigid,ROIflag,plotFlag)
 % Original script by Eftychios Pnevmatikakis, edited by Guillaume Etter
 % Edited by Daniel Almeida Filho Mar/2020 (SilvaLab - UCLA)
 % Updated by Daniel Almeida Filho Aug/2020 (SilvaLab - UCLA)
-
+% Updated by Daniel Almeida Filho Oct/2021 (SilvaLab - UCLA)
 warning off all
 
 if nargin<3
@@ -36,8 +36,8 @@ open(writerObj);
 
 ms.shifts = [];
 ms.meanFrame = [];
-
 for video_i = 1:ms.numFiles
+    answer='No';
     tic
     name = [ms.vidObj{1, video_i}.Path filesep ms.vidObj{1, video_i}.Name];
     disp(['Registration on: ' name]);
@@ -45,21 +45,12 @@ for video_i = 1:ms.numFiles
         gridSize = [164 164];
     end
     % read data and convert to single
-    Yf = read_file(name);
-    if video_i == 1 
-        if ROIflag
-            [~,mask] = selectROI(Yf,false); 
-            mask = uint8(mask);
-        else
-            mask = uint8(ones(size(Yf,1),size(Yf,2)));
-        end
-    end
-    Yf = single(Yf.*repmat(mask,1,1,size(Yf,3)));
+    Yf = single(read_file(name));
+    
     Yf = downsample_data(Yf,'space',1,ms.ds,1);
     
     Y = imfilter(Yf,psf,'symmetric');
     [d1,d2,~] = size(Y);
-    
     % Setting registration parameters (rigid vs non-rigid)
     if isnonrigid
         disp('Non-rigid motion correction...');
@@ -72,18 +63,48 @@ for video_i = 1:ms.numFiles
             'max_shift',20,'iter',1,'correct_bidir',false);
     end
     
-    %% register using the high pass filtered data and apply shifts to original data
-    if isempty(template)
-        [M1,shifts1,template] = normcorre(Y(bound/2+1:end-bound/2,bound/2+1:end-bound/2,:),options); % register filtered data
-        % exclude boundaries due to high pass filtering effects
-    else
-        [M1,shifts1,template] = normcorre(Y(bound/2+1:end-bound/2,bound/2+1:end-bound/2,:),options,template); % register filtered data
+    while strcmp(answer,'No') % Testing if Motion Correction is good in the first video
+        if video_i == 1
+            if ROIflag
+                [~,mask,~] = selectROI(Y,false);
+                mask = single(mask);
+            else
+                mask = single(ones(size(Y,1),size(Y,2)));
+            end
+        else
+            answer='Yes';
+        end
+        Y2 = Y.*repmat(mask,1,1,size(Y,3));
+        
+        
+        
+        %% register using the high pass filtered data and apply shifts to original data
+        if isempty(template)
+            [M1,shifts1,template] = normcorre(Y2(bound/2+1:end-bound/2,bound/2+1:end-bound/2,:),options); % register filtered data
+            % exclude boundaries due to high pass filtering effects
+        else
+            [M1,shifts1,template] = normcorre(Y2(bound/2+1:end-bound/2,bound/2+1:end-bound/2,:),options,template); % register filtered data
+        end
+        
+        Mr = apply_shifts(Yf,shifts1,options,bound/2,bound/2); % apply shifts to full dataset
+        if strcmp(answer,'No')
+            answer = checkMotionCorrection(Yf,Mr);
+        end
     end
-    
-    Mr = apply_shifts(Yf,shifts1,options,bound/2,bound/2); % apply shifts to full dataset
     % apply shifts on the whole movie
-    
+    if size(Mr,3)<4 % (1/2)workaround because the writeVideo function
+        %gets confused when there is a video with only 3 frames.
+        % It misunderstands it as an RGB 1-frame video.
+        temp = Mr;
+        Mr = reshape(Mr,size(Mr,1),size(Mr,2),1,size(Mr,3));
+    end
     writeVideo(writerObj,uint8(Mr));
+    
+    if length(size(Mr))==4 % (2/2)workaround because the writeVideo function
+        %gets confused when there is a video with only 3 frames.
+        % It misunderstands it as an RGB 1-frame video.
+        Mr=temp;
+    end
     
     %% compute metrics
     [cY,~,~] = motion_metrics(Y(bound/2+1:end-bound/2,bound/2+1:end-bound/2,:),options.max_shift);
@@ -113,6 +134,7 @@ for video_i = 1:ms.numFiles
     end
     corr_gain = cYf./cM1f*100;
     
+    ms.maskROI = mask;
     ms.shifts{video_i} = shifts1;
     ms.templateMotionCorr = template;
     ms.XYshifts{video_i} = shifts;

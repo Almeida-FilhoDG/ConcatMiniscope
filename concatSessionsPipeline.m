@@ -30,7 +30,9 @@ save(strcat(path,filesep,ConcatFolder,filesep,'concatInfo.mat'),'concatInfo','-v
 Step1Dur = tic; 
 disp('Step 1: Applying motion correction on single sessions.');
 plotFlag = false; %Plot the results of motion correction
-ROIflag = false; %Choose true if you want to select a specific ROI in the FOV for each separate session
+ROIflag = false; %Choose true if you want to select a specific ROI in the 
+% FOV for each separate session. Pixels outside of the FOV will be deemed
+% zero.
 replaceRGBVideo = false; %Choose true if you want to replace RGB videos by their gray scale version
 for i = 1:nSessions
     cd(strcat(path,filesep,concatInfo.Sessions(i).name))
@@ -49,9 +51,7 @@ for i = 1:nSessions
     save([ms.dirName filesep 'ms.mat'],'ms');
     clear ms
 end
-if ~isfield(concatInfo,'FrameRate')
-    concatInfo.FrameRate = 30;
-end
+
 %%% Place all the motion corrected videos in the same folder
 disp('Step 1.1: Copying videos to concatenate to the same folder and in the correct order.');
 mkdir(strcat(path,filesep,ConcatFolder));
@@ -66,6 +66,7 @@ for i = 1:length(concatInfo.order)
         strcat(path,filesep,ConcatFolder,filesep,['msvideo' num2str(i) '.avi']))
     clear ms
 end
+save(strcat(path,filesep,ConcatFolder,filesep,'concatInfo.mat'),'concatInfo','-v7.3')
 save(strcat(path,filesep,ConcatFolder,filesep,'animal.mat'),'animal','-v7.3')
 disp(['Total duration of Step 1 = ' num2str(toc(Step1Dur)) ' seconds.'])
 %% Step 2: Alignment across sessions
