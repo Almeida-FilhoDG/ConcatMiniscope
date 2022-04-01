@@ -1,4 +1,4 @@
-function ms = msNormCorreConcat(ms,isnonrigid,ROIflag,plotFlag)
+function ms = msNormCorreConcat(ms,isnonrigid,ROIflag,plotFlag,checkMotCorr)
 % Performs fast, rigid registration (option for non-rigid also available).
 % Relies on NormCorre (Paninski lab). Rigid registration works fine for
 % large lens (1-2mm) GRIN lenses, while non-rigid might work better for
@@ -8,11 +8,17 @@ function ms = msNormCorreConcat(ms,isnonrigid,ROIflag,plotFlag)
 % Edited by Daniel Almeida Filho Mar/2020 (SilvaLab - UCLA)
 % Updated by Daniel Almeida Filho Aug/2020 (SilvaLab - UCLA)
 % Updated by Daniel Almeida Filho Oct/2021 (SilvaLab - UCLA)
-warning off all
+% Updated by Daniel Almeida Filho Apr/2022 (SilvaLab - UCLA)
 
-if nargin<3
-    plotFlag = false;
-    ROIflag=false;
+warning off all
+if nargin < 5
+    checkMotCorr = false;
+    if nargin<4
+        plotFlag = false;
+        if nargin<3
+            ROIflag=false;
+        end
+    end
 end
 
 %% Filtering parameters
@@ -76,7 +82,9 @@ for video_i = 1:ms.numFiles
         end
         Y2 = Y.*repmat(mask,1,1,size(Y,3));
         
-        
+        if ~checkMotCorr
+            answer='Yes';
+        end
         
         %% register using the high pass filtered data and apply shifts to original data
         if isempty(template)

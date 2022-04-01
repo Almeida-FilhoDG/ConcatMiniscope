@@ -34,6 +34,8 @@ ROIflag = false; %Choose true if you want to select a specific ROI in the
 % FOV for each separate session. Pixels outside of the FOV will be deemed
 % zero.
 replaceRGBVideo = false; %Choose true if you want to replace RGB videos by their gray scale version
+checkMotCorr = true; %Manually check the first video of motion correction 
+% to see if the algoirthm is capable of correcting motion properly for that specific dataset.
 for i = 1:nSessions
     cd(strcat(path,filesep,concatInfo.Sessions(i).name))
     ms = msGenerateVideoObjConcat(pwd, concatInfo.equipment, replaceRGBVideo,'msCam');
@@ -47,7 +49,7 @@ for i = 1:nSessions
     mkdir(strcat(pwd,filesep,analysis_time));
     save([ms.dirName filesep 'ms.mat'],'ms');
     disp(['Working on Session: ' num2str(i) ' of ' num2str(nSessions)])
-    ms = msNormCorreConcat(ms,isnonrigid,ROIflag,plotFlag);
+    ms = msNormCorreConcat(ms,isnonrigid,ROIflag,plotFlag,checkMotCorr);
     save([ms.dirName filesep 'ms.mat'],'ms');
     clear ms
 end

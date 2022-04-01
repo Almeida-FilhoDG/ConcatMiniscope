@@ -24,7 +24,7 @@ for i = 1:size(Data,1)
     temp = conv(temp,rectwin(DownSampleFactor)/DownSampleFactor,'same');
     temp = temp(1:DownSampleFactor:end);
     [~,temp2, ~] = deconvolveCa(temp, 'ar1', ...
-        'thresholded', 'optimize_smin', 'optimize_pars', 'thresh_factor', 0.99);  %#ok<*ASGLU>
+        'thresholded', 'optimize_smin', true,'optimize_pars', true,'thresh_factor', 0.99);  %#ok<*ASGLU>
     temp2=interp1(timevecDiff(1:length(temp2)),temp2,0:size(Data,2)-1);
     temp2(isnan(temp2))=0;
     FR(i,:)=temp2;%./nanmax(temp2);
