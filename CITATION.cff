@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Almeida-Filho"
+  given-names: "Daniel"
+  orcid: "https://orcid.org/0000-0002-3583-3796"
+title: "ConcatMiniscope Pipeline: From minsicope recordings to tracking inidividual cells across multiple sessions"
+version: 1.0.0
+doi: 10.5281/zenodo.5676164
+date-released: 2021-11-11
+url: "https://github.com/Almeida-FilhoDG/ConcatMiniscope"

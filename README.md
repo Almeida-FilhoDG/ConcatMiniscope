@@ -1,5 +1,8 @@
-# ConcatMiniscope
+# ConcatMiniscope 
+**DOI: 10.5281/zenodo.5676164**
+
 MATLAB algorithm for the concatenation of miniscope recorded sessions.
+This pipeline is based on the [Miniscope Analysis Package](https://github.com/marcnormandin/MiniscopeAnalysis_CNMF_E) developped by Guillaume Etter - McGill University.
 
 Requirements:
 1. Matlab 2016 or later
